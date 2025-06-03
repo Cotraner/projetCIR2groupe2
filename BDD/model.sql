@@ -2,7 +2,25 @@
 #        Script MySQL.
 #------------------------------------------------------------
 
+DROP TABLE IF EXISTS possede;
+DROP TABLE IF EXISTS possede_OND_MAR;
+DROP TABLE IF EXISTS fait_par;
+DROP TABLE IF EXISTS possede_OND_MOD;
+DROP TABLE IF EXISTS modele_panneau;
+DROP TABLE IF EXISTS marque_onduleur;
+DROP TABLE IF EXISTS marque_panneau;
+DROP TABLE IF EXISTS modele;
+DROP TABLE IF EXISTS installateur;
+DROP TABLE IF EXISTS panneau;
+DROP TABLE IF EXISTS installation;
+DROP TABLE IF EXISTS localisation;
+DROP TABLE IF EXISTS commune;
+DROP TABLE IF EXISTS departement;
+DROP TABLE IF EXISTS region;
+DROP TABLE IF EXISTS pays;
+DROP TABLE IF EXISTS onduleur;
 
+--------------------------------------------------------------
 #------------------------------------------------------------
 # Table: onduleur
 #------------------------------------------------------------
