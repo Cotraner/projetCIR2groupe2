@@ -38,7 +38,7 @@
     <div class="d-flex align-items-center">
       <img src="../../images/linkedin.png" alt="LinkedIn" class="linkedin-logo me-3">
       <div>
-        <p class="mb-0">clementrobin</p>
+        <p class="mb-0"><a href="https://www.linkedin.com/in/cl%C3%A9ment-robin123/">clementrobin</a></p>
         <p class="mb-0">louislacoste</p>
       </div>
     </div>
