@@ -4,6 +4,86 @@
 
 
 #------------------------------------------------------------
+# Table: onduleur
+#------------------------------------------------------------
+
+CREATE TABLE onduleur(
+        id_onduleur Int  Auto_increment  NOT NULL
+	,CONSTRAINT onduleur_PK PRIMARY KEY (id_onduleur)
+)ENGINE=InnoDB;
+
+
+#------------------------------------------------------------
+# Table: pays
+#------------------------------------------------------------
+
+CREATE TABLE pays(
+        id_pays  Int  Auto_increment  NOT NULL ,
+        nom_pays Char (50) NOT NULL
+	,CONSTRAINT pays_PK PRIMARY KEY (id_pays)
+)ENGINE=InnoDB;
+
+
+#------------------------------------------------------------
+# Table: region
+#------------------------------------------------------------
+
+CREATE TABLE region(
+        reg_code Int NOT NULL ,
+        reg_nom  Char (50) NOT NULL ,
+        id_pays  Int NOT NULL
+	,CONSTRAINT region_PK PRIMARY KEY (reg_code)
+
+	,CONSTRAINT region_pays_FK FOREIGN KEY (id_pays) REFERENCES pays(id_pays)
+)ENGINE=InnoDB;
+
+
+#------------------------------------------------------------
+# Table: departement
+#------------------------------------------------------------
+
+CREATE TABLE departement(
+        dep_code Varchar (5) NOT NULL ,
+        dep_nom  Char (50) NOT NULL ,
+        reg_code Int NOT NULL
+	,CONSTRAINT departement_PK PRIMARY KEY (dep_code)
+
+	,CONSTRAINT departement_region_FK FOREIGN KEY (reg_code) REFERENCES region(reg_code)
+)ENGINE=InnoDB;
+
+
+#------------------------------------------------------------
+# Table: commune
+#------------------------------------------------------------
+
+CREATE TABLE commune(
+        code_INSEE  Varchar (5) NOT NULL ,
+        nom_commune Char (50) NOT NULL ,
+        pop         Int NOT NULL ,
+        code_pos    Int NOT NULL ,
+        dep_code    Varchar (5) NOT NULL
+	,CONSTRAINT commune_PK PRIMARY KEY (code_INSEE)
+
+	,CONSTRAINT commune_departement_FK FOREIGN KEY (dep_code) REFERENCES departement(dep_code)
+)ENGINE=InnoDB;
+
+
+#------------------------------------------------------------
+# Table: localisation
+#------------------------------------------------------------
+
+CREATE TABLE localisation(
+        id_localistation Int  Auto_increment  NOT NULL ,
+        latitude         Float NOT NULL ,
+        longitude        Float NOT NULL ,
+        code_INSEE       Varchar (5) NOT NULL
+	,CONSTRAINT localisation_PK PRIMARY KEY (id_localistation)
+
+	,CONSTRAINT localisation_commune_FK FOREIGN KEY (code_INSEE) REFERENCES commune(code_INSEE)
+)ENGINE=InnoDB;
+
+
+#------------------------------------------------------------
 # Table: installation
 #------------------------------------------------------------
 
@@ -18,36 +98,13 @@ CREATE TABLE installation(
         pente_opti        Int NOT NULL ,
         orientation       Int NOT NULL ,
         orientation_opti  Int NOT NULL ,
-        prod_pvgis        Int NOT NULL
+        prod_pvgis        Int NOT NULL ,
+        id_onduleur       Int NOT NULL ,
+        id_localistation  Int NOT NULL
 	,CONSTRAINT installation_PK PRIMARY KEY (id_installation)
-)ENGINE=InnoDB;
 
-
-#------------------------------------------------------------
-# Table: onduleur
-#------------------------------------------------------------
-
-CREATE TABLE onduleur(
-        id_onduleur     Int  Auto_increment  NOT NULL ,
-        id_installation Int NOT NULL
-	,CONSTRAINT onduleur_PK PRIMARY KEY (id_onduleur)
-
-	,CONSTRAINT onduleur_installation_FK FOREIGN KEY (id_installation) REFERENCES installation(id_installation)
-)ENGINE=InnoDB;
-
-
-#------------------------------------------------------------
-# Table: localisation
-#------------------------------------------------------------
-
-CREATE TABLE localisation(
-        id_localistation Int  Auto_increment  NOT NULL ,
-        latitude         Float NOT NULL ,
-        longitude        Float NOT NULL ,
-        id_installation  Int NOT NULL
-	,CONSTRAINT localisation_PK PRIMARY KEY (id_localistation)
-
-	,CONSTRAINT localisation_installation_FK FOREIGN KEY (id_installation) REFERENCES installation(id_installation)
+	,CONSTRAINT installation_onduleur_FK FOREIGN KEY (id_onduleur) REFERENCES onduleur(id_onduleur)
+	,CONSTRAINT installation_localisation0_FK FOREIGN KEY (id_localistation) REFERENCES localisation(id_localistation)
 )ENGINE=InnoDB;
 
 
@@ -65,74 +122,13 @@ CREATE TABLE panneau(
 
 
 #------------------------------------------------------------
-# Table: commune
-#------------------------------------------------------------
-
-CREATE TABLE commune(
-        code_INSEE       Varchar (5) NOT NULL ,
-        nom_commune      Char (50) NOT NULL ,
-        pop              Int NOT NULL ,
-        code_pos         Int NOT NULL ,
-        id_localistation Int NOT NULL
-	,CONSTRAINT commune_PK PRIMARY KEY (code_INSEE)
-
-	,CONSTRAINT commune_localisation_FK FOREIGN KEY (id_localistation) REFERENCES localisation(id_localistation)
-)ENGINE=InnoDB;
-
-
-#------------------------------------------------------------
-# Table: departement
-#------------------------------------------------------------
-
-CREATE TABLE departement(
-        dep_code   Varchar (5) NOT NULL ,
-        dep_nom    Char (50) NOT NULL ,
-        code_INSEE Varchar (5) NOT NULL
-	,CONSTRAINT departement_PK PRIMARY KEY (dep_code)
-
-	,CONSTRAINT departement_commune_FK FOREIGN KEY (code_INSEE) REFERENCES commune(code_INSEE)
-)ENGINE=InnoDB;
-
-
-#------------------------------------------------------------
-# Table: region
-#------------------------------------------------------------
-
-CREATE TABLE region(
-        reg_code Int NOT NULL ,
-        reg_nom  Char (50) NOT NULL ,
-        dep_code Varchar (5) NOT NULL
-	,CONSTRAINT region_PK PRIMARY KEY (reg_code)
-
-	,CONSTRAINT region_departement_FK FOREIGN KEY (dep_code) REFERENCES departement(dep_code)
-)ENGINE=InnoDB;
-
-
-#------------------------------------------------------------
-# Table: pays
-#------------------------------------------------------------
-
-CREATE TABLE pays(
-        id_pays  Int  Auto_increment  NOT NULL ,
-        nom_pays Char (50) NOT NULL ,
-        reg_code Int NOT NULL
-	,CONSTRAINT pays_PK PRIMARY KEY (id_pays)
-
-	,CONSTRAINT pays_region_FK FOREIGN KEY (reg_code) REFERENCES region(reg_code)
-)ENGINE=InnoDB;
-
-
-#------------------------------------------------------------
 # Table: installateur
 #------------------------------------------------------------
 
 CREATE TABLE installateur(
         id_installateur  Int  Auto_increment  NOT NULL ,
-        nom_installateur Char (50) NOT NULL ,
-        id_installation  Int
+        nom_installateur Char (50) NOT NULL
 	,CONSTRAINT installateur_PK PRIMARY KEY (id_installateur)
-
-	,CONSTRAINT installateur_installation_FK FOREIGN KEY (id_installation) REFERENCES installation(id_installation)
 )ENGINE=InnoDB;
 
 
@@ -181,6 +177,20 @@ CREATE TABLE modele_panneau(
 
 
 #------------------------------------------------------------
+# Table: installer
+#------------------------------------------------------------
+
+CREATE TABLE installer(
+        id_installateur Int NOT NULL ,
+        id_installation Int NOT NULL
+	,CONSTRAINT installer_PK PRIMARY KEY (id_installateur,id_installation)
+
+	,CONSTRAINT installer_installateur_FK FOREIGN KEY (id_installateur) REFERENCES installateur(id_installateur)
+	,CONSTRAINT installer_installation0_FK FOREIGN KEY (id_installation) REFERENCES installation(id_installation)
+)ENGINE=InnoDB;
+
+
+#------------------------------------------------------------
 # Table: possede OND_MOD
 #------------------------------------------------------------
 
@@ -223,15 +233,15 @@ CREATE TABLE possede_OND_MAR(
 
 
 #------------------------------------------------------------
-# Table: possede
+# Table: possede MOD_PAN
 #------------------------------------------------------------
 
-CREATE TABLE possede(
+CREATE TABLE possede_MOD_PAN(
         id_modele  Int NOT NULL ,
         id_panneau Int NOT NULL
-	,CONSTRAINT possede_PK PRIMARY KEY (id_modele,id_panneau)
+	,CONSTRAINT possede_MOD_PAN_PK PRIMARY KEY (id_modele,id_panneau)
 
-	,CONSTRAINT possede_modele_panneau_FK FOREIGN KEY (id_modele) REFERENCES modele_panneau(id_modele)
-	,CONSTRAINT possede_panneau0_FK FOREIGN KEY (id_panneau) REFERENCES panneau(id_panneau)
+	,CONSTRAINT possede_MOD_PAN_modele_panneau_FK FOREIGN KEY (id_modele) REFERENCES modele_panneau(id_modele)
+	,CONSTRAINT possede_MOD_PAN_panneau0_FK FOREIGN KEY (id_panneau) REFERENCES panneau(id_panneau)
 )ENGINE=InnoDB;
 

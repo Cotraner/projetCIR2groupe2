@@ -1,26 +1,27 @@
-fetch('../../back/api.php?resource=installations&id=1')
-  .then(res => res.json())
-  .then(inst => {
-    console.log("Installation #1 :", inst);
+// Affiche la carte centrée sur la France
+var map = L.map("map").setView([46.53431920546267, 2.61964400404613], 6);
 
-    const lat = parseFloat(inst.latitude);
-    const lon = parseFloat(inst.longitude);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution:
+    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+}).addTo(map);
 
-    const map = L.map('map').setView([lat, lon], 13);
+// Récupère les coordonnées de l'installation avec id=1
+fetch("http://10.10.51.122/projetCIR2groupe2/back/api.php?resource=installations&id=1")
+  .then((res) => res.json())
+  .then((inst) => {
+    console.log("Réponse API :", inst);
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
+    const lat = inst.latitude;
+    const lon = inst.longitude;
 
-    const marker = L.marker([lat, lon]).addTo(map);
-    marker.bindPopup(`
-      <b>Installation #${inst.id_installation}</b><br>
-      Panneaux : ${inst.nb_panneaux}<br>
-      Surface : ${inst.surface} m²<br>
-      Puissance : ${inst.puissance_crete} Wc
-    `).openPopup();
+    console.log("Latitude :", lat);
+    console.log("Longitude :", lon);
+
+    // Tu peux ajouter un marqueur ici si tu veux
+    L.marker([lat, lon]).addTo(map);
   })
-  .catch(err => {
+  .catch((err) => {
     console.error("Erreur API :", err);
   });

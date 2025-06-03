@@ -1,1 +1,12 @@
-#map { height: 180px; }
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+#map {
+    height: calc(100vh - 240px); /* Ajuste si nécessaire */
+    width: 80vw;                 /* 80% de la largeur de l’écran */
+    margin: 10px auto 0 auto;    /* 10px en haut, centré horizontalement */
+    border-radius: 10px;         /* Optionnel, pour un rendu plus doux */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optionnel aussi */
+}

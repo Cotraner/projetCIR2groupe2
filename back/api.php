@@ -1,32 +1,42 @@
 <?php
-header('Content-Type: application/json');
-require_once 'db.php';
+// Affiche les erreurs PHP pour le débogage
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
+// Spécifie le format de la réponse
+header('Content-Type: application/json');
+
+// Inclusion sécurisée de la base de données
+require_once(__DIR__ . '/db.php'); // ✅ plus robuste
+
+// Récupération de la méthode HTTP et des paramètres
 $method = $_SERVER['REQUEST_METHOD'];
 $resource = $_GET['resource'] ?? null;
 $id = $_GET['id'] ?? null;
 
+// Gestion des ressources disponibles
 switch ($resource) {
     case 'installations':
         switch ($method) {
             case 'GET':
                 if ($id) {
                     $_GET['id'] = $id;
-                    require 'installations/get_one.php';  // si tu veux l'ajouter plus tard
+                    require_once(__DIR__ . '/installations/get_one.php'); // ✅ sécurise le chemin
                 } else {
-                    require 'installations/get.php';
+                    require_once(__DIR__ . '/installations/get.php');
                 }
                 break;
 
             case 'POST':
-                require 'installations/post.php';
+                require_once(__DIR__ . '/installations/post.php');
                 break;
 
             case 'PUT':
             case 'PATCH':
                 if ($id) {
                     $_GET['id'] = $id;
-                    require 'installations/put.php';
+                    require_once(__DIR__ . '/installations/put.php');
                 } else {
                     http_response_code(400);
                     echo json_encode(['error' => 'ID requis pour modifier']);
@@ -36,7 +46,7 @@ switch ($resource) {
             case 'DELETE':
                 if ($id) {
                     $_GET['id'] = $id;
-                    require 'installations/delete.php';
+                    require_once(__DIR__ . '/installations/delete.php');
                 } else {
                     http_response_code(400);
                     echo json_encode(['error' => 'ID requis pour suppression']);

@@ -1,5 +1,5 @@
 <?php
-require_once '../db.php';
+require_once(__DIR__ . '/../db.php');
 
 if (!isset($_GET['id'])) {
     http_response_code(400);
@@ -13,7 +13,7 @@ try {
     $stmt = $pdo->prepare("
         SELECT i.*, l.latitude, l.longitude
         FROM installation i
-        JOIN localisation l ON i.id_installation = l.id_installation
+        JOIN localisation l ON i.id_localistation = l.id_localistation
         WHERE i.id_installation = ?
     ");
     $stmt->execute([$id]);
