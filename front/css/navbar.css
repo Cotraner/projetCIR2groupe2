@@ -1,0 +1,68 @@
+/* navbar.css */
+
+/* Supprime les marges/paddings inutiles */
+.navbar {
+    padding: 0;
+    position: relative;
+    background-color: #106797;
+}
+
+.navbar .nav-link,
+.navbar .navbar-brand {
+    color: #F3A829;
+    font-family: Itim;
+    font-size: x-large;
+}
+.nav-item {
+    padding-left: 130px;
+    padding-right: 130px;
+}
+/* (optionnel) Garde le jaune au survol */
+.navbar .nav-link:hover {
+    color: #ffd84a;
+}
+
+/* Aligne le logo tout à gauche et en bas de la navbar */
+.navbar-brand {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+}
+
+/* Ajuste la taille du logo */
+#logo {
+    height: 100px; /* occupe toute la hauteur de la navbar */
+    width: auto;
+    display: block;
+}
+
+body{
+    background-color: #F6ECDE;
+    font-family: Itim;
+    color: #F3A829;
+}
+
+.text{
+    color: #F3A829;
+    font-family: Itim;
+}
+
+.custom-footer {
+  background-color: #106797;
+  color: #F3A829;
+  font-family: 'Itim', cursive;
+}
+
+.linkedin-logo {
+  height: 60px;
+}
+
+.isen-logo {
+  height: 70px;
+}
+
+.text-yellow {
+  color: #F3A829;
+}
