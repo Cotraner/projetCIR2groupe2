@@ -1,91 +1,82 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <title>Carte Soleil SOLAIRE</title>
+  <meta charset="utf-8">
+  <title>Carte Soleil SOLAIRE</title>
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="../css/navbar.css">
-    <link rel="stylesheet" href="../css/carte.css">
-    <link href="https://fonts.googleapis.com/css?family=Itim" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../css/navbar.css">
+  <link rel="stylesheet" href="../css/carte.css"> <!-- tous les styles personnalisés ici -->
+  <link href="https://fonts.googleapis.com/css?family=Itim" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/css/bootstrap-multiselect.css" />
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
-    <script src="../js/carte.js" defer></script>
-
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/js/bootstrap-multiselect.min.js"></script>
+  <script src="../js/carte.js" defer></script>
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
-        <a class="navbar-brand" href="#">
-            <img id="logo" src="../../images/logo-Soleil-SOLAIRE.png" alt="Soleil Solaire Logo">
-        </a>
-        <div class="collapse navbar-collapse justify-content-around w-100" id="navbarNavDropdown">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="accueil.php">Accueil<span class="sr-only"></span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="recherches.php">Recherches</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="">Carte</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <h2>Filtrer les installations</h2>
-<form id="filtre-form">
-  <label for="annee">Année :</label>
-  <select id="annee">
-    <option value="">Toutes</option>
-    <!-- Les années seront ajoutées dynamiquement en JS -->
-  </select>
-
-  <label for="departement">Département :</label>
-  <select id="departement">
-    <option value="">Tous</option>
-    <!-- Départements ajoutés dynamiquement ou codés en dur -->
-  </select>
-
-  <button type="submit">Filtrer</button>
-</form>
-
-
-    <div class="main-content">
-        <div id="map"></div>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="#">
+      <img id="logo" src="../../images/logo-Soleil-SOLAIRE.png" alt="Soleil Solaire Logo">
+    </a>
+    <div class="collapse navbar-collapse justify-content-around w-100" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="accueil.php">Accueil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="recherches.php">Recherches</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="">Carte</a>
+        </li>
+      </ul>
     </div>
+  </nav>
 
-  
-<footer class="custom-footer text-yellow">
-  <div class="container d-flex justify-content-between align-items-center py-3 flex-wrap">
-    
-    <!-- Colonne gauche : LinkedIn -->
-    <div class="d-flex align-items-center">
-      <img src="../../images/linkedin.png" alt="LinkedIn" class="linkedin-logo me-3">
+  <h2>Filtrer les installations</h2>
+
+  <form id="filtre-form">
+    <label for="annee">Années :</label>
+    <select id="annee" multiple class="form-control"></select>
+
+    <label for="departement">Départements :</label>
+    <select id="departement" multiple class="form-control"></select>
+
+    <button type="submit" class="btn btn-primary">Filtrer</button>
+  </form>
+
+  <div class="main-content">
+    <div id="map"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="custom-footer text-yellow">
+    <div class="container d-flex justify-content-between align-items-center py-3 flex-wrap">
+      <div class="d-flex align-items-center">
+        <img src="../../images/linkedin.png" alt="LinkedIn" class="linkedin-logo me-3">
+        <div>
+          <p class="mb-0"><a href="https://www.linkedin.com/in/cl%C3%A9ment-robin123/">clementrobin</a></p>
+          <p class="mb-0">louislacoste</p>
+        </div>
+      </div>
+
+      <div class="text-center flex-fill">
+        <p class="mb-0 fw-bold">Groupe 2 CIR 2</p>
+      </div>
+
       <div>
-        <p class="mb-0"><a href="https://www.linkedin.com/in/cl%C3%A9ment-robin123/">clementrobin</a></p>
-        <p class="mb-0">louislacoste</p>
+        <img src="../../images/isen.png" alt="ISEN" class="isen-logo">
       </div>
     </div>
-
-    <!-- Centre -->
-    <div class="text-center flex-fill">
-      <p class="mb-0 fw-bold">Groupe 2 CIR 2</p>
-    </div>
-
-    <!-- Colonne droite : ISEN -->
-    <div>
-      <img src="../../images/isen.png" alt="ISEN" class="isen-logo">
-    </div>
-
-  </div>
-</footer>
+  </footer>
 </body>
 </html>

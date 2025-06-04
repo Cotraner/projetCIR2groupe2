@@ -142,7 +142,7 @@ with DATA_CSV.open(newline="", encoding="utf-8") as f_data:
 
         sql_lines.append(
             "INSERT INTO installation (date_installation, nb_panneaux, surface, puissance_crete, nb_ondulateur, "
-            f"pente, pente_opti, orientation, orientation_opti, prod_pvgis, id_onduleur, id_localistation, id_installateur) "
+            f"pente, pente_opti, orientation, orientation_opti, prod_pvgis, id_onduleur, id_localisation, id_installateur) "
             f"VALUES ('{date}', {nb_panneaux}, {surface}, {puissance}, {nb_ond}, {pente}, {pente_opti}, {ori}, {ori_opti}, {prod}, @ond, @loc, @inst);"
         )
         sql_lines.append("SET @instal := LAST_INSERT_ID();")

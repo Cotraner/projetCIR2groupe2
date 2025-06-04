@@ -3,12 +3,20 @@
     <head>
         <meta charset="utf-8">
         <title> Recherche Soleil SOLAIRE </title>
-        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="../css/navbar.css">
         <link href='https://fonts.googleapis.com/css?family=Itim' rel='stylesheet'>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
+        <link rel="stylesheet" href="../css/recherches.css"> <!-- tous les styles personnalisés ici -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/css/bootstrap-multiselect.css" />
+
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/js/bootstrap-multiselect.min.js"></script>
+        <script src="../js/recherches.js" defer></script>
+
     </head>
     <body>
         <nav class="navbar navbar-expand-lg ">
@@ -30,7 +38,22 @@
         <div class="container my-5">
   
 </div>
-    </body>
+  <h2>Filtrer les recherches</h2>
+
+  <form id="filtre-form">
+    <label for="onduleur">marque de l’onduleur :</label>
+    <select id="onduleur" multiple class="form-control"></select>
+
+    <label for="panneaux"> marque des panneaux :</label>
+    <select id="panneaux" multiple class="form-control"></select>
+
+    <label for="departement">Départements :</label>
+    <select id="departement" multiple class="form-control"></select>
+
+    <button type="submit" class="btn btn-primary">Filtrer</button>
+  </form>
+  <div id="resultats" class="container mt-4"></div>
+
     <footer class="custom-footer text-yellow">
   <div class="container d-flex justify-content-between align-items-center py-3 flex-wrap">
     
@@ -55,4 +78,5 @@
 
   </div>
 </footer>
+</body>
 </html>

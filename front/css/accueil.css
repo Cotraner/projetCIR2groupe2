@@ -1,0 +1,31 @@
+.stat-card {
+  background-color: #fff9ed;
+  border-radius: 20px;
+  padding: 30px 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.stat-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(244, 167, 41, 0.35);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #f4a729;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-number {
+  transform: scale(1.1);
+}
+
+.stat-label {
+  font-size: 1.2rem;
+  margin-top: 10px;
+  color: #e1901c;
+  font-family: 'Itim', cursive;
+}

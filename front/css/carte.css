@@ -1,19 +1,36 @@
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+/* Titre */
+h2 {
+  text-align: center;
+  color: #d88b00;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 15px;
 }
 
+/* Formulaire centré */
+#filtre-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+}
 
+/* Labels orange */
+#filtre-form label {
+  font-weight: bold;
+  color: #d88b00;
+}
 
 #map {
-  width: 80vw;
-  height: calc(100vh - 100px - 100px - 20px); 
-  margin: 20px auto 0 auto;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 90vw;
+  height: 565px;
+  margin: 0 auto 30px auto;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
+
 form#filtre-form {
   margin: 20px;
   padding: 10px;

@@ -1,20 +1,21 @@
-// Carte centrée sur la France
 var map = L.map("map").setView([46.53431920546267, 2.61964400404613], 6);
 
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
-  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  attribution: '&copy; OpenStreetMap'
 }).addTo(map);
 
-// Référence des éléments du formulaire
 const anneeSelect = document.getElementById("annee");
 const departementSelect = document.getElementById("departement");
 const form = document.getElementById("filtre-form");
 
 let allMarkers = [];
 let allInstallations = [];
+let departementsDisponibles = [];
+let anneesDisponibles = [];
+let depsAuto = [];
+let anneesAuto = [];
 
-// Charge les installations et initialise la carte + formulaires
 fetch("../../back/api.php?resource=installations")
   .then((res) => res.json())
   .then((data) => {
@@ -23,45 +24,83 @@ fetch("../../back/api.php?resource=installations")
     const annees = new Set();
     const departements = new Set();
 
-    // Collecte unique des années et départements
     allInstallations.forEach((inst) => {
       const annee = inst.date_installation.split("-")[0];
       annees.add(annee);
 
-if (inst.dep_code && inst.dep_code.trim() !== "") {
-  departements.add(inst.dep_code);
-}
+      const dep = inst.dep_code?.trim();
+      if (dep) {
+        departements.add(dep);
+      }
+    });
 
+    anneesDisponibles = [...annees].sort();
+    departementsDisponibles = [...departements].sort();
 
-    // Remplit le select années (trié)
-[...annees].sort().slice(0, 20).forEach((a) => {
-  const opt = document.createElement("option");
-  opt.value = a;
-  opt.textContent = a;
-  anneeSelect.appendChild(opt);
-});
+    // Ajout des années
+    anneesDisponibles.forEach((a) => {
+      const opt = document.createElement("option");
+      opt.value = a;
+      opt.textContent = a;
+      anneeSelect.appendChild(opt);
+    });
 
-    // Remplit le select départements (limité à 20 aléatoires)
-    const deps = [...departements].sort().slice(0, 20); // limite à 20
-    deps.forEach((d) => {
+    // Ajout des départements
+    departementsDisponibles.forEach((d) => {
       const opt = document.createElement("option");
       opt.value = d;
       opt.textContent = d;
       departementSelect.appendChild(opt);
     });
 
+    // Multiselect années (modifiables)
+    $('#annee').multiselect({
+      includeSelectAllOption: true,
+      maxHeight: 300,
+      buttonWidth: '250px',
+      nonSelectedText: 'Choisir...',
+      numberDisplayed: 1,
+      enableFiltering: true
+    });
+
+    // Multiselect départements (verrouillé)
+    $('#departement').multiselect({
+      maxHeight: 300,
+      buttonWidth: '250px',
+      nonSelectedText: 'Sélection auto uniquement',
+      numberDisplayed: 1,
+      enableFiltering: false,
+      includeSelectAllOption: false,
+      onDropdownShown: function () {
+        setTimeout(() => {
+          $('#departement-container .multiselect-container input[type="checkbox"]').each(function () {
+            $(this).prop('disabled', true);
+          });
+        }, 10);
+      },
+      onChange: function () {
+        // Rétablit la sélection automatique
+        $('#departement').multiselect('deselectAll', false);
+        $('#departement').multiselect('select', depsAuto);
+      }
+    });
   })
   .catch((err) => {
     console.error("Erreur API :", err);
   });
 
-// Affiche un tableau d’installations sur la carte
 function afficherInstallations(installations) {
-  // Supprime les anciens marqueurs
   allMarkers.forEach((m) => map.removeLayer(m));
   allMarkers = [];
 
-  installations.forEach((inst) => {
+  if (installations.length === 0) {
+    alert("😕 Aucune installation ne correspond à vos critères.");
+    return;
+  }
+
+  const limited = installations.slice(0, 200);
+
+  limited.forEach((inst) => {
     const lat = parseFloat(inst.latitude);
     const lon = parseFloat(inst.longitude);
 
@@ -74,24 +113,44 @@ function afficherInstallations(installations) {
       `);
     allMarkers.push(marker);
   });
+
+  if (installations.length > 200) {
+    alert("⚠️ Trop d’installations : seules les 200 premières sont affichées.");
+  }
 }
 
-// Gère la soumission du formulaire
+function getDepartementsAleatoires() {
+  const shuffled = [...departementsDisponibles].sort(() => Math.random() - 0.5);
+  const count = Math.floor(Math.random() * 20) + 1;
+  return shuffled.slice(0, count);
+}
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const anneeChoisie = anneeSelect.value;
-  const depChoisi = departementSelect.value;
+  depsAuto = getDepartementsAleatoires();
+
+  $('#departement').multiselect('deselectAll', false);
+  $('#departement').multiselect('select', depsAuto);
+
+  $('#annee').multiselect('deselectAll', false);
+  $('#annee').multiselect('select', anneesAuto);
+
+  filtrerEtAfficher();
+});
+
+function filtrerEtAfficher() {
+  const anneesChoisies = $('#annee').val() || [];
 
   const filtres = allInstallations.filter((inst) => {
     const annee = inst.date_installation.split("-")[0];
-    const dep = inst.dep_code || ""; // si dispo
+    const dep = inst.dep_code || "";
 
-    const okAnnee = !anneeChoisie || annee === anneeChoisie;
-    const okDep = !depChoisi || dep === depChoisi;
+    const okAnnee = anneesChoisies.length === 0 || anneesChoisies.includes(annee);
+    const okDep = depsAuto.includes(dep);
 
     return okAnnee && okDep;
   });
 
   afficherInstallations(filtres);
-});
+}

@@ -93,11 +93,11 @@ CREATE TABLE commune(
 #------------------------------------------------------------
 
 CREATE TABLE localisation(
-        id_localistation Int  Auto_increment  NOT NULL ,
+        id_localisation Int  Auto_increment  NOT NULL ,
         latitude         Float NOT NULL ,
         longitude        Float NOT NULL ,
         code_INSEE       Varchar (5) NOT NULL
-	,CONSTRAINT localisation_PK PRIMARY KEY (id_localistation)
+	,CONSTRAINT localisation_PK PRIMARY KEY (id_localisation)
 
 	,CONSTRAINT localisation_commune_FK FOREIGN KEY (code_INSEE) REFERENCES commune(code_INSEE)
 )ENGINE=InnoDB;
@@ -179,12 +179,12 @@ CREATE TABLE installation(
         orientation_opti  Int NOT NULL ,
         prod_pvgis        Int NOT NULL ,
         id_onduleur       Int NOT NULL ,
-        id_localistation  Int NOT NULL ,
+        id_localisation  Int NOT NULL ,
         id_installateur   Int NOT NULL
 	,CONSTRAINT installation_PK PRIMARY KEY (id_installation)
 
 	,CONSTRAINT installation_onduleur_FK FOREIGN KEY (id_onduleur) REFERENCES onduleur(id_onduleur)
-	,CONSTRAINT installation_localisation0_FK FOREIGN KEY (id_localistation) REFERENCES localisation(id_localistation)
+	,CONSTRAINT installation_localisation0_FK FOREIGN KEY (id_localisation) REFERENCES localisation(id_localisation)
 	,CONSTRAINT installation_installateur1_FK FOREIGN KEY (id_installateur) REFERENCES installateur(id_installateur)
 )ENGINE=InnoDB;
 
