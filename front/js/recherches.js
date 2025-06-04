@@ -105,16 +105,11 @@ form.addEventListener("submit", (e) => {
   const onduleurChoisis = $('#onduleur').val() || [];
   const panneauxChoisis = $('#panneaux').val() || [];
 
-  let filtres = allInstallations.filter(inst =>
+  const filtres = allInstallations.filter(inst =>
     (onduleurChoisis.length === 0 || onduleurChoisis.includes(inst.marque_onduleur)) &&
     (panneauxChoisis.length === 0 || panneauxChoisis.includes(inst.marque_panneau)) &&
     depsAuto.includes(inst.dep_code)
   );
-
-  const totalFiltres = filtres.length;
-
-  // Limite à 100 résultats max
-  filtres = filtres.slice(0, 100);
 
   if (filtres.length === 0) {
     resultatsDiv.innerHTML = "<p>Aucun résultat trouvé.</p>";
@@ -133,20 +128,12 @@ form.addEventListener("submit", (e) => {
         <td>${inst.surface ?? "?"} m²</td>
         <td>${inst.puissance_crête ?? inst.puissance_crete ?? "?"} kWc</td>
         <td>${inst.dep_nom ?? "?"} (${inst.dep_code ?? "?"})</td>
-        <td>
-          <a href="details.php?id=${inst.id_installation}" class="btn btn-sm btn-warning">Détails</a>
-        </td>
       </tr>
     `;
   }).join("");
 
-  let message = `<h4>Résultats : ${totalFiltres} installation(s) trouvée(s)</h4>`;
-  if (totalFiltres > 100) {
-    message += `<div class="alert alert-info">Affichage limité aux 100 premiers résultats.</div>`;
-  }
-
   resultatsDiv.innerHTML = `
-    ${message}
+    <h4>Résultats : ${filtres.length} installation(s)</h4>
     <table class="table table-bordered table-striped mt-3">
       <thead>
         <tr>
@@ -155,7 +142,6 @@ form.addEventListener("submit", (e) => {
           <th>Surface</th>
           <th>Puissance crête</th>
           <th>Localisation</th>
-          <th>Actions</th>
         </tr>
       </thead>
       <tbody>

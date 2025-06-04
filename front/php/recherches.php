@@ -52,8 +52,7 @@
 
     <button type="submit" class="btn btn-primary">Filtrer</button>
   </form>
-  <div id="resultats" class="container mt-4"></div>
-
+    
     <footer class="custom-footer text-yellow">
   <div class="container d-flex justify-content-between align-items-center py-3 flex-wrap">
     
