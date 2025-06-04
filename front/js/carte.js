@@ -32,12 +32,12 @@ fetch("../../back/api.php?resource=installations")
     });
 
     // Remplit le select années (trié)
-    [...annees].sort().forEach((a) => {
-      const opt = document.createElement("option");
-      opt.value = a;
-      opt.textContent = a;
-      anneeSelect.appendChild(opt);
-    });
+[...annees].sort().slice(0, 20).forEach((a) => {
+  const opt = document.createElement("option");
+  opt.value = a;
+  opt.textContent = a;
+  anneeSelect.appendChild(opt);
+});
 
     // Remplit le select départements (limité à 20 aléatoires)
     const deps = [...departements].sort().slice(0, 20); // limite à 20
@@ -48,7 +48,6 @@ fetch("../../back/api.php?resource=installations")
       departementSelect.appendChild(opt);
     });
 
-    afficherInstallations(allInstallations);
   })
   .catch((err) => {
     console.error("Erreur API :", err);
