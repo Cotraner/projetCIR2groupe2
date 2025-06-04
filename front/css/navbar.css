@@ -66,3 +66,17 @@ body{
 .text-yellow {
   color: #F3A829;
 }
+
+footer {
+  position: fixed !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100px !important;
+  background-color: #106797 !important;
+  color: #F3A829 !important;
+  text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 999 !important;
+}

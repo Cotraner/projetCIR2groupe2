@@ -31,6 +31,9 @@
         </nav>
         <div class="container my-5">
 
+
+  
+</div>
   <footer class="custom-footer text-yellow">
   <div class="container d-flex justify-content-between align-items-center py-3 flex-wrap">
     
@@ -55,7 +58,5 @@
 
   </div>
 </footer>
-  
-</div>
     </body>
 </html>

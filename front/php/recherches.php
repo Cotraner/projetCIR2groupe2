@@ -28,27 +28,31 @@
             </div>
         </nav>
         <div class="container my-5">
-
-  <footer class="text-center" style="background-color: #106797;">
-    <div class="container d-flex justify-content-center py-5">
-      <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
-        <i class="fab fa-facebook-f"></i>
-      </button>
-      <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
-        <i class="fab fa-youtube"></i>
-      </button>
-      <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
-        <i class="fab fa-instagram"></i>
-      </button>
-      <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
-        <i class="fab fa-twitter"></i>
-      </button>
-    </div>
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-      <p class="text">Groupe 2 CIR 2</p>
-    </div>
-  </footer>
   
 </div>
     </body>
+    <footer class="custom-footer text-yellow">
+  <div class="container d-flex justify-content-between align-items-center py-3 flex-wrap">
+    
+    <!-- Colonne gauche : LinkedIn -->
+    <div class="d-flex align-items-center">
+      <img src="../../images/linkedin.png" alt="LinkedIn" class="linkedin-logo me-3">
+      <div>
+        <p class="mb-0"><a href="https://www.linkedin.com/in/cl%C3%A9ment-robin123/">clementrobin</a></p>
+        <p class="mb-0">louislacoste</p>
+      </div>
+    </div>
+
+    <!-- Centre -->
+    <div class="text-center flex-fill">
+      <p class="mb-0 fw-bold">Groupe 2 CIR 2</p>
+    </div>
+
+    <!-- Colonne droite : ISEN -->
+    <div>
+      <img src="../../images/isen.png" alt="ISEN" class="isen-logo">
+    </div>
+
+  </div>
+</footer>
 </html>

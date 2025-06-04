@@ -16,7 +16,8 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
-    <script src="../../back/carte.js" defer></script>
+    <script src="../js/carte.js" defer></script>
+
 </head>
 
 <body>
@@ -39,31 +40,52 @@
             </ul>
         </div>
     </nav>
+    <h2>Filtrer les installations</h2>
+<form id="filtre-form">
+  <label for="annee">Année :</label>
+  <select id="annee">
+    <option value="">Toutes</option>
+    <!-- Les années seront ajoutées dynamiquement en JS -->
+  </select>
 
-    <!-- Carte -->
-    <div id="map"></div>
+  <label for="departement">Département :</label>
+  <select id="departement">
+    <option value="">Tous</option>
+    <!-- Départements ajoutés dynamiquement ou codés en dur -->
+  </select>
 
-    <!-- Footer -->
-    <div class="container my-5">
-        <footer class="text-center" style="background-color: #106797;">
-            <div class="container d-flex justify-content-center py-5">
-                <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
-                    <i class="fab fa-facebook-f"></i>
-                </button>
-                <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
-                    <i class="fab fa-youtube"></i>
-                </button>
-                <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
-                    <i class="fab fa-instagram"></i>
-                </button>
-                <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
-                    <i class="fab fa-twitter"></i>
-                </button>
-            </div>
-            <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-                <p class="text">Groupe 2 CIR 2</p>
-            </div>
-        </footer>
+  <button type="submit">Filtrer</button>
+</form>
+
+
+    <div class="main-content">
+        <div id="map"></div>
     </div>
+
+  
+<footer class="custom-footer text-yellow">
+  <div class="container d-flex justify-content-between align-items-center py-3 flex-wrap">
+    
+    <!-- Colonne gauche : LinkedIn -->
+    <div class="d-flex align-items-center">
+      <img src="../../images/linkedin.png" alt="LinkedIn" class="linkedin-logo me-3">
+      <div>
+        <p class="mb-0"><a href="https://www.linkedin.com/in/cl%C3%A9ment-robin123/">clementrobin</a></p>
+        <p class="mb-0">louislacoste</p>
+      </div>
+    </div>
+
+    <!-- Centre -->
+    <div class="text-center flex-fill">
+      <p class="mb-0 fw-bold">Groupe 2 CIR 2</p>
+    </div>
+
+    <!-- Colonne droite : ISEN -->
+    <div>
+      <img src="../../images/isen.png" alt="ISEN" class="isen-logo">
+    </div>
+
+  </div>
+</footer>
 </body>
 </html>
