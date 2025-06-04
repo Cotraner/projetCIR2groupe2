@@ -28,8 +28,10 @@ fetch("../../back/api.php?resource=installations")
       const annee = inst.date_installation.split("-")[0];
       annees.add(annee);
 
-      if (inst.dep_code) departements.add(inst.dep_code); // si dispo
-    });
+if (inst.dep_code && inst.dep_code.trim() !== "") {
+  departements.add(inst.dep_code);
+}
+
 
     // Remplit le select années (trié)
 [...annees].sort().slice(0, 20).forEach((a) => {
