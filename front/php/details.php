@@ -18,15 +18,12 @@ if ($id) {
                 i.surface,
                 i.puissance_crete,
                 i.nb_panneaux,
-                i.pvgis,
                 l.latitude,
                 l.longitude,
                 c.nom_commune,
                 d.dep_nom,
                 mo.marque AS marque_onduleur,
-                o.modele AS modele_onduleur,
-                mp.marque AS marque_panneau,
-                p.modele AS modele_panneau
+                mp.marque AS marque_panneau
             FROM installation i
             JOIN localisation l ON i.id_localisation = l.id_localisation
             JOIN commune c ON l.code_INSEE = c.code_INSEE
@@ -58,9 +55,14 @@ if ($id) {
     <title>Détails Installation</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/navbar.css">
+    <link href="https://fonts.googleapis.com/css?family=Itim" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href='https://fonts.googleapis.com/css?family=Itim' rel='stylesheet'>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+    <style>
+        body {
+            font-family: 'Itim', cursive;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg">
@@ -83,10 +85,9 @@ if ($id) {
                 <li class="list-group-item"><strong>Date :</strong> <?= htmlspecialchars($data['date_installation']) ?></li>
                 <li class="list-group-item"><strong>Surface :</strong> <?= htmlspecialchars($data['surface']) ?> m²</li>
                 <li class="list-group-item"><strong>Puissance crête :</strong> <?= htmlspecialchars($data['puissance_crete']) ?> kWc</li>
-                <li class="list-group-item"><strong>Puissance PVGIS :</strong> <?= htmlspecialchars($data['pvgis']) ?> kWh</li>
                 <li class="list-group-item"><strong>Nombre de panneaux :</strong> <?= htmlspecialchars($data['nb_panneaux']) ?></li>
-                <li class="list-group-item"><strong>Onduleur :</strong> <?= htmlspecialchars($data['marque_onduleur']) ?> - <?= htmlspecialchars($data['modele_onduleur']) ?></li>
-                <li class="list-group-item"><strong>Panneaux :</strong> <?= htmlspecialchars($data['marque_panneau']) ?> - <?= htmlspecialchars($data['modele_panneau']) ?></li>
+                <li class="list-group-item"><strong>Onduleur :</strong> <?= htmlspecialchars($data['marque_onduleur']) ?></li>
+                <li class="list-group-item"><strong>Panneaux :</strong> <?= htmlspecialchars($data['marque_panneau']) ?></li>
                 <li class="list-group-item"><strong>Localisation :</strong> <?= htmlspecialchars($data['nom_commune']) ?> (<?= htmlspecialchars($data['dep_nom']) ?>)</li>
                 <li class="list-group-item"><strong>Coordonnées GPS :</strong> <?= $data['latitude'] ?>, <?= $data['longitude'] ?></li>
             </ul>
@@ -98,8 +99,8 @@ if ($id) {
                 <script>
                     document.addEventListener("DOMContentLoaded", function () {
                         const map = L.map('map').setView([<?= $data['latitude'] ?>, <?= $data['longitude'] ?>], 6);
-                        L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-                            attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
                             minZoom: 1,
                             maxZoom: 20
                         }).addTo(map);
@@ -108,6 +109,7 @@ if ($id) {
                 </script>
             <?php endif; ?>
 
+            <!-- ✅ Bouton retour -->
             <div class="text-center mt-4">
                 <button onclick="history.back()" class="btn btn-secondary">← Retour à la recherche</button>
             </div>

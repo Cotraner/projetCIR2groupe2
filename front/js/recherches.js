@@ -105,11 +105,15 @@ form.addEventListener("submit", (e) => {
   const onduleurChoisis = $('#onduleur').val() || [];
   const panneauxChoisis = $('#panneaux').val() || [];
 
-  const filtres = allInstallations.filter(inst =>
+  const filtresComplets = allInstallations.filter(inst =>
     (onduleurChoisis.length === 0 || onduleurChoisis.includes(inst.marque_onduleur)) &&
     (panneauxChoisis.length === 0 || panneauxChoisis.includes(inst.marque_panneau)) &&
     depsAuto.includes(inst.dep_code)
   );
+
+  const filtres = filtresComplets.slice(0, 100);
+
+  console.log(`Résultats complets : ${filtresComplets.length} / Affichés : ${filtres.length}`);
 
   if (filtres.length === 0) {
     resultatsDiv.innerHTML = "<p>Aucun résultat trouvé.</p>";
@@ -126,14 +130,22 @@ form.addEventListener("submit", (e) => {
         <td>${moisAnnee}</td>
         <td>${inst.nb_panneaux ?? "?"}</td>
         <td>${inst.surface ?? "?"} m²</td>
-        <td>${inst.puissance_crête ?? inst.puissance_crete ?? "?"} kWc</td>
+        <td>${inst.puissance_crete ?? inst.puissance_crête ?? "?"} kWc</td>
         <td>${inst.dep_nom ?? "?"} (${inst.dep_code ?? "?"})</td>
+        <td>
+          <a href="details.php?id=${inst.id_installation}" class="btn btn-sm btn-warning">Détails</a>
+        </td>
       </tr>
     `;
   }).join("");
 
+  let message = `<h4>${filtresComplets.length} installation(s) trouvée(s)</h4>`;
+  if (filtresComplets.length > 100) {
+    message += `<p style="color:red;font-weight:bold">Seules les 100 premières sont affichées pour des raisons de performance.</p>`;
+  }
+
   resultatsDiv.innerHTML = `
-    <h4>Résultats : ${filtres.length} installation(s)</h4>
+    ${message}
     <table class="table table-bordered table-striped mt-3">
       <thead>
         <tr>
@@ -142,6 +154,7 @@ form.addEventListener("submit", (e) => {
           <th>Surface</th>
           <th>Puissance crête</th>
           <th>Localisation</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
