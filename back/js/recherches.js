@@ -90,31 +90,13 @@ fetch("../../back/api.php?resource=installations")
       enableFiltering: false,
       includeSelectAllOption: false,
       onDropdownShown: function () {
-        setTimeout(() => {
-          $('#departement-container .multiselect-container input[type="checkbox"]').each(function () {
-            $(this).prop('disabled', true);
-          });
-        }, 10);
+        $('.multiselect-container input[type="checkbox"]', $('#departement').parent()).prop('disabled', true);
       },
       onChange: function () {
         $('#departement').multiselect('deselectAll', false);
         $('#departement').multiselect('select', depsAuto);
       }
     });
-
-    // 🔁 Si on revient de details.php, restaurer les filtres précédents
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("retour") === "details" && sessionStorage.getItem("derniereRecherche")) {
-      const previousState = JSON.parse(sessionStorage.getItem("derniereRecherche"));
-
-      $('#onduleur').val(previousState.onduleurs).multiselect('refresh');
-      $('#panneaux').val(previousState.panneaux).multiselect('refresh');
-      depsAuto = previousState.deps;
-      $('#departement').val(depsAuto).multiselect('refresh');
-
-      // ⏎ Soumet la recherche avec les anciennes valeurs
-      form.dispatchEvent(new Event("submit"));
-    }
   })
   .catch((err) => {
     console.error("Erreur API :", err);
@@ -128,19 +110,18 @@ function getDepartementsAleatoires() {
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+  console.log("Formulaire soumis");
 
+  // Supprimer l'image de recherche si elle est présente
   const imageDiv = document.getElementById("image-recherche");
-  if (imageDiv) imageDiv.remove();
-
-  const params = new URLSearchParams(window.location.search);
-  const fromDetails = params.get("retour") === "details";
-
-  // 🚫 Ne regénère pas depsAuto si retour depuis details.php
-  if (!fromDetails) {
-    depsAuto = getDepartementsAleatoires();
-    $('#departement').multiselect('deselectAll', false);
-    $('#departement').multiselect('select', depsAuto);
+  if (imageDiv) {
+    imageDiv.remove();
   }
+
+  depsAuto = getDepartementsAleatoires();
+
+  $('#departement').multiselect('deselectAll', false);
+  $('#departement').multiselect('select', depsAuto);
 
   const onduleurChoisis = $('#onduleur').val() || [];
   const panneauxChoisis = $('#panneaux').val() || [];
@@ -153,17 +134,12 @@ form.addEventListener("submit", (e) => {
 
   const filtres = filtresComplets.slice(0, 100);
 
+  console.log(`Résultats complets : ${filtresComplets.length} / Affichés : ${filtres.length}`);
+
   if (filtres.length === 0) {
     resultatsDiv.innerHTML = "<p style='color:red'>Aucun résultat trouvé.</p>";
     return;
   }
-
-  // 💾 Sauvegarder les filtres dans le stockage local
-  sessionStorage.setItem("derniereRecherche", JSON.stringify({
-    onduleurs: onduleurChoisis,
-    panneaux: panneauxChoisis,
-    deps: depsAuto
-  }));
 
   const rows = filtres.map(inst => {
     const date = new Date(inst.date_installation);
@@ -178,7 +154,7 @@ form.addEventListener("submit", (e) => {
         <td>${inst.puissance_crete ?? inst.puissance_crête ?? "?"} kWc</td>
         <td>${inst.dep_nom ?? "?"} (${inst.dep_code ?? "?"})</td>
         <td>
-          <a href="details.php?id=${inst.id_installation}&retour=recherches.php?retour=details" class="btn btn-sm btn-warning">Détails</a>
+          <a href="details.php?id=${inst.id_installation}" class="btn btn-sm btn-warning">Détails</a>
         </td>
       </tr>
     `;

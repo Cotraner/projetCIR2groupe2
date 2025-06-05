@@ -133,7 +133,7 @@ switch ($resource) {
             echo json_encode(['error' => 'Méthode non autorisée']);
         }
         break;
-
+        
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Ressource inconnue']);

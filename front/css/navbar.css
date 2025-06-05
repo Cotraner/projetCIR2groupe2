@@ -91,3 +91,12 @@ footer {
   text-align: justify;
   text-justify: inter-word;
 }
+
+a.custom-link {
+  color: #F3A829 !important;
+  text-decoration: none !important;
+}
+
+a.custom-link:hover {
+  color: #ffd84a !important;
+}

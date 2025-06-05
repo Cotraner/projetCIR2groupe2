@@ -64,8 +64,9 @@
       <div class="d-flex align-items-center">
         <img src="../../images/linkedin.png" alt="LinkedIn" class="linkedin-logo me-3">
         <div>
-          <p class="mb-0"><a href="https://www.linkedin.com/in/cl%C3%A9ment-robin123/">clementrobin</a></p>
-          <p class="mb-0">louislacoste</p>
+          <p class="mb-0"><a class="custom-link" href="https://www.linkedin.com/in/cl%C3%A9ment-robin123/">Clément Robin</a></p>
+          <p class="mb-0"><a class="custom-link" href="https://www.instagram.com/l0uisstiti">Louis Lacoste</a></p>
+
         </div>
       </div>
 
@@ -74,7 +75,7 @@
       </div>
 
       <div>
-        <img src="../../images/isen.png" alt="ISEN" class="isen-logo">
+      <a href="https://isen-ouest.fr/"><img src="../../images/isen.png" alt="ISEN" class="isen-logo" ></a>
       </div>
     </div>
   </footer>

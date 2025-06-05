@@ -10,16 +10,3 @@ fetch("../../back/api.php?resource=stats")
     document.getElementById("marques-panneaux").textContent = data.marques_panneaux;
   })
   .catch(err => console.error("Erreur API stats:", err));
-
-function verifierIdentifiants(e) {
-  e.preventDefault();
-  const id = document.getElementById('admin-id').value.trim();
-  const mdp = document.getElementById('admin-mdp').value.trim();
-  const erreur = document.getElementById('erreur-admin');
-
-  if (id === "admin" && mdp === "Groupe2") {
-    window.location.href = "../../back/php/accueil.php";
-  } else {
-    erreur.textContent = "Identifiant ou mot de passe incorrect.";
-  }
-}
