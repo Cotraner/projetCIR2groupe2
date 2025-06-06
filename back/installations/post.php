@@ -13,59 +13,107 @@ try {
     $pdo->beginTransaction();
 
     // Pays
-    $stmt = $pdo->prepare("INSERT IGNORE INTO pays (nom_pays) VALUES (?)");
+    $stmt = $pdo->prepare("SELECT id_pays FROM pays WHERE nom_pays = ?");
     $stmt->execute([$data['country']]);
-    $id_pays = $pdo->lastInsertId() ?: $pdo->query("SELECT id_pays FROM pays WHERE nom_pays = " . $pdo->quote($data['country']))->fetchColumn();
+    $id_pays = $stmt->fetchColumn();
+    if (!$id_pays) {
+        $stmt = $pdo->prepare("INSERT INTO pays (nom_pays) VALUES (?)");
+        $stmt->execute([$data['country']]);
+        $id_pays = $pdo->lastInsertId();
+    }
 
-    // Région
-    $stmt = $pdo->prepare("INSERT IGNORE INTO region (reg_code, reg_nom, id_pays) VALUES (?, ?, ?)");
-    $stmt->execute([$data['administrative_area_level_1'], $data['administrative_area_level_1'], $id_pays]);
+    $reg_code = $data['reg_code']; // doit être un entier, par exemple 52
+    $reg_nom = $data['administrative_area_level_1']; // le nom complet
+
+    $stmt = $pdo->prepare("SELECT reg_code FROM region WHERE reg_code = ?");
+    $stmt->execute([$reg_code]);
+    $existing = $stmt->fetchColumn();
+    if (!$existing) {
+        $stmt = $pdo->prepare("INSERT INTO region (reg_code, reg_nom, id_pays) VALUES (?, ?, ?)");
+        $stmt->execute([$reg_code, $reg_nom, $id_pays]);
+    }
 
     // Département
-    $stmt = $pdo->prepare("INSERT IGNORE INTO departement (dep_code, dep_nom, reg_code) VALUES (?, ?, ?)");
-    $stmt->execute([$data['administrative_area_level_2'], $data['administrative_area_level_2'], $data['administrative_area_level_1']]);
+    $stmt = $pdo->prepare("SELECT dep_code FROM departement WHERE dep_code = ?");
+    $stmt->execute([$data['administrative_area_level_2']]);
+    $dep_code = $stmt->fetchColumn();
+    if (!$dep_code) {
+        $stmt = $pdo->prepare("INSERT INTO departement (dep_code, dep_nom, reg_code) VALUES (?, ?, ?)");
+        $stmt->execute([$data['administrative_area_level_2'], $data['administrative_area_level_2'], $reg_code]);
+    }
 
     // Commune
-    $stmt = $pdo->prepare("INSERT IGNORE INTO commune (code_INSEE, nom_commune, population, code_pos, dep_code) VALUES (?, ?, ?, ?, ?)");
-    $stmt->execute([
-        $data['code_insee'],
-        $data['locality'],
-        0,
-        $data['postal_code'],
-        $data['administrative_area_level_2']
-    ]);
+    $stmt = $pdo->prepare("SELECT code_INSEE FROM commune WHERE code_INSEE = ?");
+    $stmt->execute([$data['code_insee']]);
+    $insee = $stmt->fetchColumn();
+    if (!$insee) {
+        $stmt = $pdo->prepare("INSERT INTO commune (code_INSEE, nom_commune, population, code_pos, dep_code) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$data['code_insee'], $data['locality'], 0, $data['postal_code'], $data['administrative_area_level_2']]);
+    }
 
     // Localisation
-    $stmt = $pdo->prepare("INSERT INTO localisation (latitude, longitude, code_INSEE) VALUES (?, ?, ?)");
+    $stmt = $pdo->prepare("SELECT id_localisation FROM localisation WHERE latitude = ? AND longitude = ? AND code_INSEE = ?");
     $stmt->execute([$data['lat'], $data['lon'], $data['code_insee']]);
-    $id_localisation = $pdo->lastInsertId();
+    $id_localisation = $stmt->fetchColumn();
+    if (!$id_localisation) {
+        $stmt = $pdo->prepare("INSERT INTO localisation (latitude, longitude, code_INSEE) VALUES (?, ?, ?)");
+        $stmt->execute([$data['lat'], $data['lon'], $data['code_insee']]);
+        $id_localisation = $pdo->lastInsertId();
+    }
 
     // Installateur
-    $stmt = $pdo->prepare("INSERT IGNORE INTO installateur (nom_installateur) VALUES (?)");
+    $stmt = $pdo->prepare("SELECT id_installateur FROM installateur WHERE nom_installateur = ?");
     $stmt->execute([$data['installateur']]);
-    $id_installateur = $pdo->lastInsertId() ?: $pdo->query("SELECT id_installateur FROM installateur WHERE nom_installateur = " . $pdo->quote($data['installateur']))->fetchColumn();
+    $id_installateur = $stmt->fetchColumn();
+    if (!$id_installateur) {
+        $stmt = $pdo->prepare("INSERT INTO installateur (nom_installateur) VALUES (?)");
+        $stmt->execute([$data['installateur']]);
+        $id_installateur = $pdo->lastInsertId();
+    }
 
-    // Marque / Modèle onduleur
-    $stmt = $pdo->prepare("INSERT IGNORE INTO marque_onduleur (marque) VALUES (?)");
+    // Marque onduleur
+    $stmt = $pdo->prepare("SELECT id_marque FROM marque_onduleur WHERE marque = ?");
     $stmt->execute([$data['onduleur_marque']]);
-    $id_marque_onduleur = $pdo->lastInsertId() ?: $pdo->query("SELECT id_marque FROM marque_onduleur WHERE marque = " . $pdo->quote($data['onduleur_marque']))->fetchColumn();
+    $id_marque_onduleur = $stmt->fetchColumn();
+    if (!$id_marque_onduleur) {
+        $stmt = $pdo->prepare("INSERT INTO marque_onduleur (marque) VALUES (?)");
+        $stmt->execute([$data['onduleur_marque']]);
+        $id_marque_onduleur = $pdo->lastInsertId();
+    }
 
-    $stmt = $pdo->prepare("INSERT IGNORE INTO modele_onduleur (modele_onduleur) VALUES (?)");
+    // Modèle onduleur
+    $stmt = $pdo->prepare("SELECT id_modele FROM modele_onduleur WHERE modele_onduleur = ?");
     $stmt->execute([$data['onduleur_modele']]);
-    $id_modele_onduleur = $pdo->lastInsertId() ?: $pdo->query("SELECT id_modele FROM modele_onduleur WHERE modele_onduleur = " . $pdo->quote($data['onduleur_modele']))->fetchColumn();
+    $id_modele_onduleur = $stmt->fetchColumn();
+    if (!$id_modele_onduleur) {
+        $stmt = $pdo->prepare("INSERT INTO modele_onduleur (modele_onduleur) VALUES (?)");
+        $stmt->execute([$data['onduleur_modele']]);
+        $id_modele_onduleur = $pdo->lastInsertId();
+    }
 
     $stmt = $pdo->prepare("INSERT INTO onduleur (id_modele, id_marque) VALUES (?, ?)");
     $stmt->execute([$id_modele_onduleur, $id_marque_onduleur]);
     $id_onduleur = $pdo->lastInsertId();
 
-    // Marque / Modèle panneau
-    $stmt = $pdo->prepare("INSERT IGNORE INTO marque_panneau (marque) VALUES (?)");
+    // Marque panneau
+    $stmt = $pdo->prepare("SELECT id_marque FROM marque_panneau WHERE marque = ?");
     $stmt->execute([$data['panneaux_marque']]);
-    $id_marque_panneau = $pdo->lastInsertId() ?: $pdo->query("SELECT id_marque FROM marque_panneau WHERE marque = " . $pdo->quote($data['panneaux_marque']))->fetchColumn();
+    $id_marque_panneau = $stmt->fetchColumn();
+    if (!$id_marque_panneau) {
+        $stmt = $pdo->prepare("INSERT INTO marque_panneau (marque) VALUES (?)");
+        $stmt->execute([$data['panneaux_marque']]);
+        $id_marque_panneau = $pdo->lastInsertId();
+    }
 
-    $stmt = $pdo->prepare("INSERT IGNORE INTO modele_panneau (modele) VALUES (?)");
+    // Modèle panneau
+    $stmt = $pdo->prepare("SELECT id_modele FROM modele_panneau WHERE modele = ?");
     $stmt->execute([$data['panneaux_modele']]);
-    $id_modele_panneau = $pdo->lastInsertId() ?: $pdo->query("SELECT id_modele FROM modele_panneau WHERE modele = " . $pdo->quote($data['panneaux_modele']))->fetchColumn();
+    $id_modele_panneau = $stmt->fetchColumn();
+    if (!$id_modele_panneau) {
+        $stmt = $pdo->prepare("INSERT INTO modele_panneau (modele) VALUES (?)");
+        $stmt->execute([$data['panneaux_modele']]);
+        $id_modele_panneau = $pdo->lastInsertId();
+    }
 
     // Installation
     $stmt = $pdo->prepare("INSERT INTO installation (

@@ -30,7 +30,7 @@
                 <a class="nav-link" href="recherches.php">Recherches</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="modification.php">modification</a>
+                <a class="nav-link" href="modification.php">Modification</a>
             </li>
         </ul>
     </div>

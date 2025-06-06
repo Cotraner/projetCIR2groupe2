@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title> Recherche Soleil SOLAIRE </title>
+    <title> Recherche Soleil SOLAIRE</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="../../front/css/navbar.css">
     <link href='https://fonts.googleapis.com/css?family=Itim' rel='stylesheet'>
@@ -29,12 +29,12 @@
                     <a class="nav-link" href="recherches.php">Recherches</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="modification.php">modification</a>
+                    <a class="nav-link" href="modification.php">Modification</a>
                 </li>
             </ul>
         </div>
     </nav>
-            <h2>Filtrer les recherches</h2>
+            <h2>Filtrer les recherches ADMIN</h2>
 
         <form id="filtre-form">
             <label for="onduleur">marque de l’onduleur :</label>

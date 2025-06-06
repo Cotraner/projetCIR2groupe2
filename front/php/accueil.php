@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="../css/accueil.css">
   <link href='https://fonts.googleapis.com/css?family=Itim' rel='stylesheet'>
   <script src="../js/accueil.js"></script>
+  <script src="../js/konami.js"></script>
 </head>
 <body>
   <div class="d-flex flex-column min-vh-100">

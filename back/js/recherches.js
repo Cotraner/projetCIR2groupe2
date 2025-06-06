@@ -8,7 +8,6 @@ let allInstallations = [];
 let departementsDisponibles = [];
 let onduleursDisponibles = [];
 let panneauxDisponibles = [];
-let depsAuto = [];
 
 fetch("../../back/api.php?resource=installations")
   .then((res) => res.json())
@@ -83,53 +82,35 @@ fetch("../../back/api.php?resource=installations")
     });
 
     $('#departement').multiselect({
+      includeSelectAllOption: true,
       maxHeight: 300,
       buttonWidth: '250px',
-      nonSelectedText: 'Sélection auto uniquement',
+      nonSelectedText: 'Choisir...',
       numberDisplayed: 1,
-      enableFiltering: false,
-      includeSelectAllOption: false,
-      onDropdownShown: function () {
-        $('.multiselect-container input[type="checkbox"]', $('#departement').parent()).prop('disabled', true);
-      },
-      onChange: function () {
-        $('#departement').multiselect('deselectAll', false);
-        $('#departement').multiselect('select', depsAuto);
-      }
+      enableFiltering: true
     });
   })
   .catch((err) => {
     console.error("Erreur API :", err);
   });
 
-function getDepartementsAleatoires() {
-  const shuffled = [...departementsDisponibles].sort(() => Math.random() - 0.5);
-  const count = Math.floor(Math.random() * 20) + 1;
-  return shuffled.slice(0, count);
-}
-
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   console.log("Formulaire soumis");
 
-  // Supprimer l'image de recherche si elle est présente
   const imageDiv = document.getElementById("image-recherche");
   if (imageDiv) {
     imageDiv.remove();
   }
 
-  depsAuto = getDepartementsAleatoires();
-
-  $('#departement').multiselect('deselectAll', false);
-  $('#departement').multiselect('select', depsAuto);
-
   const onduleurChoisis = $('#onduleur').val() || [];
   const panneauxChoisis = $('#panneaux').val() || [];
+  const departementsChoisis = $('#departement').val() || [];
 
   const filtresComplets = allInstallations.filter(inst =>
     (onduleurChoisis.length === 0 || onduleurChoisis.includes(inst.marque_onduleur)) &&
     (panneauxChoisis.length === 0 || panneauxChoisis.includes(inst.marque_panneau)) &&
-    depsAuto.includes(inst.dep_code)
+    (departementsChoisis.length === 0 || departementsChoisis.includes(inst.dep_code))
   );
 
   const filtres = filtresComplets.slice(0, 100);
@@ -153,9 +134,6 @@ form.addEventListener("submit", (e) => {
         <td>${inst.surface ?? "?"} m²</td>
         <td>${inst.puissance_crete ?? inst.puissance_crête ?? "?"} kWc</td>
         <td>${inst.dep_nom ?? "?"} (${inst.dep_code ?? "?"})</td>
-        <td>
-          <a href="details.php?id=${inst.id_installation}" class="btn btn-sm btn-warning">Détails</a>
-        </td>
       </tr>
     `;
   }).join("");
@@ -175,7 +153,6 @@ form.addEventListener("submit", (e) => {
           <th>Surface</th>
           <th>Puissance crête</th>
           <th>Localisation</th>
-          <th>Actions</th>
         </tr>
       </thead>
       <tbody>

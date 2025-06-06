@@ -19,40 +19,60 @@ $id = $_GET['id'] ?? null;
 switch ($resource) {
     case 'stats':
         if ($method === 'GET') {
-            $result = [
-                'total_installations' => (int) $pdo->query("SELECT COUNT(*) FROM installation")->fetchColumn(),
+            $result = [];
 
-                'installations_par_annee' => (int) $pdo->query("
-                    SELECT COUNT(DISTINCT YEAR(date_installation)) FROM installation
-                ")->fetchColumn(),
+            // Statistiques globales
+            $result['total_installations'] = (int) $pdo->query("SELECT COUNT(*) FROM installation")->fetchColumn();
 
-                'installations_par_region' => (int) $pdo->query("
-                    SELECT COUNT(DISTINCT r.reg_nom)
-                    FROM installation i
-                    JOIN localisation l ON i.id_localisation = l.id_localisation
-                    JOIN commune c ON l.code_INSEE = c.code_INSEE
-                    JOIN departement d ON c.dep_code = d.dep_code
-                    JOIN region r ON d.reg_code = r.reg_code
-                ")->fetchColumn(),
+            $result['installations_par_annee'] = (int) $pdo->query("
+                SELECT COUNT(DISTINCT YEAR(date_installation)) FROM installation
+            ")->fetchColumn();
 
-                'installations_par_annee_region' => (int) $pdo->query("
-                    SELECT COUNT(*) FROM (
-                        SELECT YEAR(i.date_installation) AS annee, r.reg_nom
-                        FROM installation i
-                        JOIN localisation l ON i.id_localisation = l.id_localisation
-                        JOIN commune c ON l.code_INSEE = c.code_INSEE
-                        JOIN departement d ON c.dep_code = d.dep_code
-                        JOIN region r ON d.reg_code = r.reg_code
-                        GROUP BY annee, r.reg_nom
-                    ) AS sub
-                ")->fetchColumn(),
+            $result['installations_par_region'] = (int) $pdo->query("
+                SELECT COUNT(DISTINCT r.reg_nom)
+                FROM installation i
+                JOIN localisation l ON i.id_localisation = l.id_localisation
+                JOIN commune c ON l.code_INSEE = c.code_INSEE
+                JOIN departement d ON c.dep_code = d.dep_code
+                JOIN region r ON d.reg_code = r.reg_code
+            ")->fetchColumn();
 
-                'nb_installateurs' => (int) $pdo->query("SELECT COUNT(*) FROM installateur")->fetchColumn(),
+            // Vrai total des installations groupées par année + région
+            $result['installations_par_annee_region'] = (int) $pdo->query("
+                SELECT COUNT(*) 
+                FROM installation i
+                JOIN localisation l ON i.id_localisation = l.id_localisation
+                JOIN commune c ON l.code_INSEE = c.code_INSEE
+                JOIN departement d ON c.dep_code = d.dep_code
+                JOIN region r ON d.reg_code = r.reg_code
+                WHERE YEAR(i.date_installation) IS NOT NULL AND r.reg_nom IS NOT NULL
+            ")->fetchColumn();
 
-                'marques_onduleurs' => (int) $pdo->query("SELECT COUNT(DISTINCT marque) FROM marque_onduleur")->fetchColumn(),
+            $result['nb_installateurs'] = (int) $pdo->query("SELECT COUNT(*) FROM installateur")->fetchColumn();
 
-                'marques_panneaux' => (int) $pdo->query("SELECT COUNT(DISTINCT marque) FROM marque_panneau")->fetchColumn()
-            ];
+            $result['marques_onduleurs'] = (int) $pdo->query("SELECT COUNT(DISTINCT marque) FROM marque_onduleur")->fetchColumn();
+
+            $result['marques_panneaux'] = (int) $pdo->query("SELECT COUNT(DISTINCT marque) FROM marque_panneau")->fetchColumn();
+
+            // Années distinctes
+            $result['annees'] = $pdo->query("
+                SELECT DISTINCT YEAR(date_installation) AS annee 
+                FROM installation 
+                WHERE date_installation IS NOT NULL
+                ORDER BY annee
+            ")->fetchAll(PDO::FETCH_COLUMN);
+
+            // Régions distinctes
+            $result['regions'] = $pdo->query("
+                SELECT DISTINCT r.reg_nom 
+                FROM region r
+                JOIN departement d ON d.reg_code = r.reg_code
+                JOIN commune c ON c.dep_code = d.dep_code
+                JOIN localisation l ON l.code_INSEE = c.code_INSEE
+                JOIN installation i ON i.id_localisation = l.id_localisation
+                WHERE r.reg_nom IS NOT NULL
+                ORDER BY r.reg_nom
+            ")->fetchAll(PDO::FETCH_COLUMN);
 
             echo json_encode($result);
         } else {
@@ -64,7 +84,6 @@ switch ($resource) {
     case 'installations':
         if ($method === 'GET') {
             if ($id) {
-                // Une seule installation
                 $stmt = $pdo->prepare("
                     SELECT 
                         i.*, 
@@ -85,10 +104,8 @@ switch ($resource) {
                     WHERE i.id_installation = ?
                 ");
                 $stmt->execute([$id]);
-                $result = $stmt->fetch();
-                echo json_encode($result);
+                echo json_encode($stmt->fetch());
             } else {
-                // Toutes les installations
                 $stmt = $pdo->query("
                     SELECT 
                         i.*, 
@@ -107,8 +124,7 @@ switch ($resource) {
                     LEFT JOIN panneau p ON p.id_installation = i.id_installation
                     LEFT JOIN marque_panneau mp ON p.id_marque = mp.id_marque
                 ");
-                $result = $stmt->fetchAll();
-                echo json_encode($result);
+                echo json_encode($stmt->fetchAll());
             }
         } elseif ($method === 'POST') {
             require_once(__DIR__ . '/installations/post.php');
@@ -133,7 +149,38 @@ switch ($resource) {
             echo json_encode(['error' => 'Méthode non autorisée']);
         }
         break;
-        
+    case 'installations_par_annee_region':
+    if ($method === 'GET') {
+        $annee = $_GET['annee'] ?? null;
+        $region = $_GET['region'] ?? null;
+
+        if ($annee && $region) {
+            $stmt = $pdo->prepare("
+                SELECT COUNT(*) AS nombre
+                FROM installation i
+                JOIN localisation l ON i.id_localisation = l.id_localisation
+                JOIN commune c ON l.code_INSEE = c.code_INSEE
+                JOIN departement d ON c.dep_code = d.dep_code
+                JOIN region r ON d.reg_code = r.reg_code
+                WHERE YEAR(i.date_installation) = :annee AND r.reg_nom = :region
+            ");
+            $stmt->execute([
+                'annee' => $annee,
+                'region' => $region
+            ]);
+            $result = $stmt->fetch();
+            echo json_encode(['nombre_installations' => (int) $result['nombre']]);
+        } else {
+            http_response_code(400);
+            echo json_encode(['error' => 'Paramètres année et région requis']);
+        }
+    } else {
+        http_response_code(405);
+        echo json_encode(['error' => 'Méthode non autorisée']);
+    }
+    break;
+
+
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Ressource inconnue']);
