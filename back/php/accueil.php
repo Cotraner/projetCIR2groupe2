@@ -32,7 +32,7 @@
           <!-- Liens navigation -->
           <ul class="navbar-nav mx-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="#">Accueil</a>
+              <a class="nav-link">Accueil</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="recherches.php">Recherches</a>

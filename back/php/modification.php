@@ -41,7 +41,7 @@
                 <a class="nav-link" href="recherches.php">Recherches</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="carte.php">Carte</a>
+                <a class="nav-link">Carte</a>
             </li>
             </ul>
         </div>

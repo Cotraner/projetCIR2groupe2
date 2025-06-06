@@ -18,7 +18,7 @@
     <main class="flex-grow-1">
       <nav class="navbar navbar-expand-lg">
         <!-- Logo à gauche -->
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand">
           <img id="logo" src="../../images/logo-Soleil-SOLAIRE.png" alt="Soleil Solaire Logo" height="60">
         </a>
 
@@ -32,7 +32,7 @@
         <div class="collapse navbar-collapse w-100" id="navbarNavDropdown">
           <ul class="navbar-nav mx-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="">Accueil<span class="sr-only">(current)</span></a>
+              <a class="nav-link">Accueil<span class="sr-only"></span></a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="recherches.php">Recherches</a>

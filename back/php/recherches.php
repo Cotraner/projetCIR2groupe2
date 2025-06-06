@@ -37,10 +37,10 @@
                 <a class="nav-link" href="accueil.php">Accueil</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="recherches.php">Recherches</a>
+                <a class="nav-link">Recherches</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="carte.php">Carte</a>
+                <a class="nav-link" href="modification.php">Modification</a>
             </li>
             </ul>
         </div>
