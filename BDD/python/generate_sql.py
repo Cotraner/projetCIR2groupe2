@@ -8,8 +8,8 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
 COMMUNES_CSV = BASE_DIR / "communes-france-2024-limite.csv"
-DATA_CSV = BASE_DIR / "data.csv"
-OUTPUT_SQL = BASE_DIR / "data.sql"
+DATA_CSV = BASE_DIR / "../data.csv"
+OUTPUT_SQL = BASE_DIR / "../data.sql"
 UNMATCH_LOG = BASE_DIR / "unmatched_localities.log"
 
 def fix_mojibake(s: str) -> str:
