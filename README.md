@@ -29,8 +29,8 @@ python generate_sql.py
 
 1. Créez la base de données MySQL :
    ```sql
-   CREATE DATABASE dbgroupe2;
-   connect dbgroupe2;
+   CREATE DATABASE [votreBase];
+   connect [votreBase];
    ```
 
 2. Importez les fichiers SQL :
