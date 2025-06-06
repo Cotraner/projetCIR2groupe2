@@ -17,9 +17,20 @@
   <div class="d-flex flex-column min-vh-100">
     <main class="flex-grow-1">
       <nav class="navbar navbar-expand-lg">
-        <a class="navbar-brand" href="#"><img id="logo" src="../../images/logo-Soleil-SOLAIRE.png" alt="Soleil Solaire Logo"></a>
-        <div class="collapse navbar-collapse justify-content-around w-100" id="navbarNavDropdown">
-          <ul class="navbar-nav">
+        <!-- Logo à gauche -->
+        <a class="navbar-brand" href="#">
+          <img id="logo" src="../../images/logo-Soleil-SOLAIRE.png" alt="Soleil Solaire Logo" height="60">
+        </a>
+
+        <!-- Bouton burger -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Contenu collapsible -->
+        <div class="collapse navbar-collapse w-100" id="navbarNavDropdown">
+          <ul class="navbar-nav mx-auto">
             <li class="nav-item active">
               <a class="nav-link" href="">Accueil<span class="sr-only">(current)</span></a>
             </li>
@@ -29,14 +40,22 @@
             <li class="nav-item">
               <a class="nav-link" href="carte.php">Carte</a>
             </li>
-            <li class="nav-item">
+
+            <!-- Icone engrenage (mobile uniquement) -->
+            <li class="nav-item d-lg-none">
               <a class="nav-link" href="#" data-toggle="modal" data-target="#adminModal">
-                <img src="../../images/engrenage.png" alt="Admin" style="width: 24px;">
+                <img src="../../images/engrenage.png" alt="Admin" width="24">
               </a>
             </li>
           </ul>
+
+          <!-- Icone engrenage (desktop uniquement, à droite) -->
+          <a class="nav-link d-none d-lg-block" href="#" data-toggle="modal" data-target="#adminModal">
+            <img src="../../images/engrenage.png" alt="Admin" width="24">
+          </a>
         </div>
       </nav>
+
 
       <div class="container my-5">
         <div>

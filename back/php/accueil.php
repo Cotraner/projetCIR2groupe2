@@ -15,12 +15,24 @@
 <body>
   <div class="d-flex flex-column min-vh-100">
     <main class="flex-grow-1">
-      <nav class="navbar navbar-expand-lg">
-        <a class="navbar-brand" href="#"><img id="logo" src="../../images/logo-Soleil-SOLAIRE.png" alt="Soleil Solaire Logo"></a>
-        <div class="collapse navbar-collapse justify-content-around w-100" id="navbarNavDropdown">
-          <ul class="navbar-nav">
+      <nav class="navbar navbar-expand-lg" style="background-color: #106797;">
+        <!-- Logo gauche -->
+        <a class="navbar-brand" href="#">
+          <img id="logo" src="../../images/logo-Soleil-SOLAIRE.png" alt="Soleil Solaire Logo" height="60">
+        </a>
+
+        <!-- Bouton hamburger -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu central + bouton retour client -->
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <!-- Liens navigation -->
+          <ul class="navbar-nav mx-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="">Accueil<span class="sr-only">(current)</span></a>
+              <a class="nav-link" href="#">Accueil</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="recherches.php">Recherches</a>
@@ -28,7 +40,19 @@
             <li class="nav-item">
               <a class="nav-link" href="modification.php">Modifications</a>
             </li>
+
+            <!-- Version mobile uniquement -->
+            <li class="nav-item d-lg-none">
+              <a class="nav-link" href="../../front/php/accueil.php">
+                <img src="../../images/retourClient.png" width="40" alt="Retour client">
+              </a>
+            </li>
           </ul>
+
+          <!-- Retour client à droite desktop -->
+          <a class="nav-link d-none d-lg-block" href="../../front/php/accueil.php">
+            <img src="../../images/retourClient.png" width="40" alt="Retour client">
+          </a>
         </div>
       </nav>
 
