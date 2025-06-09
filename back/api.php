@@ -1,13 +1,13 @@
 <?php
-// Affiche les erreurs PHP pour le débogage
+// Affiche les erreurs PHP
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Spécifie le format de la réponse
+// Spécifie le format JSON
 header('Content-Type: application/json');
 
-// Inclusion sécurisée de la base de données
+// Initialise la connexion à la base de données
 require_once(__DIR__ . '/db.php');
 
 // Récupération de la méthode HTTP et des paramètres
@@ -128,7 +128,7 @@ switch ($resource) {
             }
         } elseif ($method === 'POST') {
             require_once(__DIR__ . '/installations/post.php');
-        } elseif (in_array($method, ['PUT', 'PATCH'])) {
+        } elseif ($method === 'PUT') {
             if ($id) {
                 $_GET['id'] = $id;
                 require_once(__DIR__ . '/installations/put.php');
@@ -179,8 +179,6 @@ switch ($resource) {
         echo json_encode(['error' => 'Méthode non autorisée']);
     }
     break;
-
-
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Ressource inconnue']);
