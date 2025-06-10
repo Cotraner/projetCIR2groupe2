@@ -31,8 +31,6 @@ fetch("../../back/api.php?resource=stats")
       opt.textContent = region;
       regionSelect.appendChild(opt);
     });
-
-    // Ajout des écouteurs
     anneeSelect.addEventListener("change", updateResult);
     regionSelect.addEventListener("change", updateResult);
   })

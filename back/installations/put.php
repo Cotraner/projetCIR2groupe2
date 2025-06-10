@@ -111,42 +111,36 @@ try {
         }
     }
 
-    /* ------------------------------------------------------------------
-     * 5. MISE À JOUR DE L’INSTALLATION
-     * ------------------------------------------------------------------*/
-    $sql = "
-        UPDATE installation SET
-            id_installation   = ?,
-            date_installation = ?,
-            nb_panneaux       = ?,
-            surface           = ?,
-            puissance_crete   = ?,
-            nb_ondulateur     = ?,
-            pente             = ?,
-            pente_opti        = ?,
-            orientation       = ?,
-            orientation_opti  = ?,
-            prod_pvgis        = ?,
-            id_onduleur       = ?,    -- ← onduleur mis à jour
-            id_localisation   = ?,
-            id_installateur   = ?
-        WHERE id_installation = ?
-    ";
+    // Update installation
+    $sql = "UPDATE installation SET
+        id_installation = ?,
+        date_installation = ?,
+        nb_panneaux = ?,
+        surface = ?,
+        puissance_crete = ?,
+        nb_ondulateur = ?,
+        pente = ?,
+        pente_opti = ?,
+        orientation = ?,
+        orientation_opti = ?,
+        prod_pvgis = ?,
+        id_localisation = ?,
+        id_installateur = ?
+        WHERE id_installation = ?";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         $nouvel_id,
-        $data['date_installation']     ?? null,
-        $nbPanneaux,
-        $data['surface']               ?? 0,
-        $data['puissance_crete']       ?? 0,
-        $data['nb_onduleur']           ?? 0,
-        $data['pente']                 ?? 0,
-        $data['pente_optimum']         ?? 0,
-        $data['orientation']           ?? 0,
-        $data['orientation_optimum']   ?? 0,
-        $data['production_pvgis']      ?? 0,
-        $id_onduleur,                       // ← FK onduleur
+        $data['date_installation'] ?? null,
+        $data['nb_panneaux'] ?? 0,
+        $data['surface'] ?? 0,
+        $data['puissance_crete'] ?? 0,
+        $data['nb_onduleur'] ?? 0,
+        $data['pente'] ?? 0,
+        $data['pente_optimum'] ?? 0,
+        $data['orientation'] ?? 0,
+        $data['orientation_optimum'] ?? 0,
+        $data['production_pvgis'] ?? 0,
         $id_localisation,
         $id_installateur,
         $id_actuel

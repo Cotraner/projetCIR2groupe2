@@ -2,7 +2,7 @@
 require_once '../db.php';
 header("Content-Type: application/json");
 
-// Récupération de l'ID via le corps JSON
+// Récupération de l'ID via JSON
 $data = json_decode(file_get_contents("php://input"), true);
 $id = $data['id'] ?? null;
 
