@@ -80,12 +80,10 @@ try {
     }
 
     // GESTION DE LA LOCALISATION
-    // Pour le moment, on va utiliser une valeur par défaut ou chercher une localisation existante
-    // Vous devrez adapter selon vos vrais noms de colonnes
+
     $id_localisation = 1; // Valeur par défaut - à adapter selon votre BDD
     
-    // Si vous voulez gérer la localisation, décommentez et adaptez :
-    /*
+
     $stmt = $pdo->prepare("
         SELECT id_localisation 
         FROM localisation 
@@ -108,28 +106,18 @@ try {
         ]);
         $id_localisation = $pdo->lastInsertId();
     }
-    */
-
-    // GESTION DE L'INSTALLATEUR
-    $id_installateur = 1; // Valeur par défaut - à adapter selon votre BDD
-    
-    // Si vous voulez gérer l'installateur, décommentez et adaptez :
-    /*
+    $id_installateur = 1;
     $stmt = $pdo->prepare("SELECT id_installateur FROM installateur WHERE nom = ?");
     $stmt->execute([$data['installateur']]);
     $id_installateur = $stmt->fetchColumn();
-    
     if (!$id_installateur) {
         $stmt = $pdo->prepare("INSERT INTO installateur (nom) VALUES (?)");
         $stmt->execute([$data['installateur']]);
         $id_installateur = $pdo->lastInsertId();
     }
-    */
-
     // Supprimer les panneaux existants de l'installation
     $stmt = $pdo->prepare("DELETE FROM panneau WHERE id_installation = ?");
     $stmt->execute([$id_actuel]);
-
     // Recréer les panneaux
     $nbPanneaux = max(0, (int)($data['nb_panneaux'] ?? 0));
     if ($nbPanneaux > 0) {
@@ -149,7 +137,6 @@ try {
         $date_installation = $data['an_installation'] . '-' . $mois . '-01';
     }
 
-    // Update installation (sans modifier l'ID)
     $sql = "
         UPDATE installation SET
             date_installation = ?,
