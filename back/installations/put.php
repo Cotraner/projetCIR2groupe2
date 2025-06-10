@@ -22,7 +22,7 @@ if (!$data) {
 try {
     $pdo->beginTransaction();
     
-    // Marque onduleur
+    // Marque onduleur - création automatique si n'existe pas
     $stmt = $pdo->prepare("SELECT id_marque FROM marque_onduleur WHERE marque = ?");
     $stmt->execute([$data['marque_onduleur']]);
     $id_marque_onduleur = $stmt->fetchColumn();
@@ -32,7 +32,7 @@ try {
         $id_marque_onduleur = $pdo->lastInsertId();
     }
 
-    // Modèle onduleur
+    // Modèle onduleur - création automatique si n'existe pas
     $stmt = $pdo->prepare("SELECT id_modele FROM modele_onduleur WHERE modele_onduleur = ?");
     $stmt->execute([$data['modele_onduleur']]);
     $id_modele_onduleur = $stmt->fetchColumn();
@@ -42,7 +42,7 @@ try {
         $id_modele_onduleur = $pdo->lastInsertId();
     }
 
-    // Onduleur (couple marque/modèle)
+    // Onduleur (couple marque/modèle) - création automatique si n'existe pas
     $stmt = $pdo->prepare("
         SELECT id_onduleur
         FROM onduleur
@@ -59,7 +59,7 @@ try {
         $id_onduleur = $pdo->lastInsertId();
     }
 
-    // Marque panneau
+    // Marque panneau - création automatique si n'existe pas
     $stmt = $pdo->prepare("SELECT id_marque FROM marque_panneau WHERE marque = ?");
     $stmt->execute([$data['marque_panneau']]);
     $id_marque_panneau = $stmt->fetchColumn();
@@ -69,7 +69,7 @@ try {
         $id_marque_panneau = $pdo->lastInsertId();
     }
 
-    // Modèle panneau
+    // Modèle panneau - création automatique si n'existe pas
     $stmt = $pdo->prepare("SELECT id_modele FROM modele_panneau WHERE modele = ?");
     $stmt->execute([$data['modele_panneau']]);
     $id_modele_panneau = $stmt->fetchColumn();
@@ -80,33 +80,29 @@ try {
     }
 
     // GESTION DE LA LOCALISATION
-
-    $id_localisation = 1; // Valeur par défaut - à adapter selon votre BDD
-    
-
     $stmt = $pdo->prepare("
-        SELECT id_localisation 
-        FROM localisation 
-        WHERE latitude = ? AND longitude = ?
+    SELECT id_localisation 
+    FROM localisation 
+    WHERE latitude = ? AND longitude = ? AND code_INSEE = ?
     ");
-    $stmt->execute([$data['lat'], $data['lon']]);
+    $stmt->execute([$data['lat'], $data['lon'], $data['code_INSEE']]);
     $id_localisation = $stmt->fetchColumn();
-    
+
     if (!$id_localisation) {
+        // 2. Insérer la nouvelle localisation
         $stmt = $pdo->prepare("
-            INSERT INTO localisation (latitude, longitude, pays, code_postal, ville) 
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO localisation (latitude, longitude, code_INSEE) 
+            VALUES (?, ?, ?)
         ");
         $stmt->execute([
             $data['lat'],
-            $data['lon'], 
-            $data['country'],
-            $data['postal_code'],
-            $data['locality']
+            $data['lon'],
+            $data['code_INSEE']
         ]);
         $id_localisation = $pdo->lastInsertId();
     }
-    $id_installateur = 1;
+
+    // GESTION DE L'INSTALLATEUR - création automatique si n'existe pas
     $stmt = $pdo->prepare("SELECT id_installateur FROM installateur WHERE nom = ?");
     $stmt->execute([$data['installateur']]);
     $id_installateur = $stmt->fetchColumn();
@@ -115,9 +111,11 @@ try {
         $stmt->execute([$data['installateur']]);
         $id_installateur = $pdo->lastInsertId();
     }
+
     // Supprimer les panneaux existants de l'installation
     $stmt = $pdo->prepare("DELETE FROM panneau WHERE id_installation = ?");
     $stmt->execute([$id_actuel]);
+    
     // Recréer les panneaux
     $nbPanneaux = max(0, (int)($data['nb_panneaux'] ?? 0));
     if ($nbPanneaux > 0) {
