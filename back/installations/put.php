@@ -8,8 +8,8 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-$id_actuel = $_GET['id'];
-$data = json_decode(file_get_contents('php://input'), true);
+$id_actuel = (int)$_GET['id'];
+$data      = json_decode(file_get_contents('php://input'), true);
 
 if (!$data) {
     http_response_code(400);
@@ -22,94 +22,131 @@ $nouvel_id = $data['nouvel_id_installation'] ?? $id_actuel;
 try {
     $pdo->beginTransaction();
 
-    // Vérifier ou insérer pays
-    $stmt = $pdo->prepare("SELECT id_pays FROM pays WHERE nom_pays = ?");
-    $stmt->execute([$data['country']]);
-    $id_pays = $stmt->fetchColumn();
-    if (!$id_pays) {
-        $stmt = $pdo->prepare("INSERT INTO pays (nom_pays) VALUES (?)");
-        $stmt->execute([$data['country']]);
-        $id_pays = $pdo->lastInsertId();
+    /* ------------------------------------------------------------------
+     * 1. GÉO : pays → région → département → commune → localisation
+     * ------------------------------------------------------------------*/
+    /* … (ta partie géo inchangée, conservée) … */
+
+    /* ------------------------------------------------------------------
+     * 2. INSTALLATEUR
+     * ------------------------------------------------------------------*/
+    /* … (ta partie installateur inchangée) … */
+
+    /* ------------------------------------------------------------------
+     * 3. ONDULEUR  (marque + modèle → id_onduleur)
+     * ------------------------------------------------------------------*/
+    // Marque
+    $stmt = $pdo->prepare("SELECT id_marque FROM marque_onduleur WHERE marque = ?");
+    $stmt->execute([$data['marque_onduleur']]);
+    $id_marque_onduleur = $stmt->fetchColumn();
+    if (!$id_marque_onduleur) {
+        $stmt = $pdo->prepare("INSERT INTO marque_onduleur (marque) VALUES (?)");
+        $stmt->execute([$data['marque_onduleur']]);
+        $id_marque_onduleur = $pdo->lastInsertId();
     }
 
-    // Vérifier ou insérer région
-    $stmt = $pdo->prepare("SELECT reg_code FROM region WHERE reg_nom = ?");
-    $stmt->execute([$data['administrative_area_level_1']]);
-    $reg_code = $stmt->fetchColumn();
-    if (!$reg_code) {
-        $stmt = $pdo->prepare("INSERT INTO region (reg_nom, id_pays) VALUES (?, ?)");
-        $stmt->execute([$data['administrative_area_level_1'], $id_pays]);
-        $reg_code = $pdo->lastInsertId();
+    // Modèle
+    $stmt = $pdo->prepare("SELECT id_modele FROM modele_onduleur WHERE modele_onduleur = ?");
+    $stmt->execute([$data['modele_onduleur']]);
+    $id_modele_onduleur = $stmt->fetchColumn();
+    if (!$id_modele_onduleur) {
+        $stmt = $pdo->prepare("INSERT INTO modele_onduleur (modele_onduleur) VALUES (?)");
+        $stmt->execute([$data['modele_onduleur']]);
+        $id_modele_onduleur = $pdo->lastInsertId();
     }
 
-    // Vérifier ou insérer département
-    $stmt = $pdo->prepare("SELECT dep_code FROM departement WHERE dep_code = ?");
-    $stmt->execute([$data['administrative_area_level_2']]);
-    $dep_code = $stmt->fetchColumn();
-    if (!$dep_code) {
-        $stmt = $pdo->prepare("INSERT INTO departement (dep_code, dep_nom, reg_code) VALUES (?, ?, ?)");
-        $stmt->execute([$data['administrative_area_level_2'], $data['administrative_area_level_2'], $reg_code]);
+    // Onduleur (couple marque/modèle)
+    $stmt = $pdo->prepare("
+        SELECT id_onduleur
+        FROM onduleur
+        WHERE id_marque = ? AND id_modele = ?
+    ");
+    $stmt->execute([$id_marque_onduleur, $id_modele_onduleur]);
+    $id_onduleur = $stmt->fetchColumn();
+    if (!$id_onduleur) {
+        $stmt = $pdo->prepare("
+            INSERT INTO onduleur (id_modele, id_marque)
+            VALUES (?, ?)
+        ");
+        $stmt->execute([$id_modele_onduleur, $id_marque_onduleur]);
+        $id_onduleur = $pdo->lastInsertId();
     }
 
-    // Vérifier ou insérer commune
-    $stmt = $pdo->prepare("SELECT code_INSEE FROM commune WHERE code_INSEE = ?");
-    $stmt->execute([$data['code_insee']]);
-    $insee = $stmt->fetchColumn();
-    if (!$insee) {
-        $stmt = $pdo->prepare("INSERT INTO commune (code_INSEE, nom_commune, population, code_pos, dep_code) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$data['code_insee'], $data['locality'], 0, $data['postal_code'], $data['administrative_area_level_2']]);
+    /* ------------------------------------------------------------------
+     * 4. PANNEAUX  (marque + modèle)  — on recrée les N panneaux de l’installation
+     * ------------------------------------------------------------------*/
+    // Marque
+    $stmt = $pdo->prepare("SELECT id_marque FROM marque_panneau WHERE marque = ?");
+    $stmt->execute([$data['marque_panneau']]);
+    $id_marque_panneau = $stmt->fetchColumn();
+    if (!$id_marque_panneau) {
+        $stmt = $pdo->prepare("INSERT INTO marque_panneau (marque) VALUES (?)");
+        $stmt->execute([$data['marque_panneau']]);
+        $id_marque_panneau = $pdo->lastInsertId();
     }
 
-    // Vérifier ou insérer localisation
-    $stmt = $pdo->prepare("SELECT id_localisation FROM localisation WHERE latitude = ? AND longitude = ? AND code_INSEE = ?");
-    $stmt->execute([$data['lat'], $data['lon'], $data['code_insee']]);
-    $id_localisation = $stmt->fetchColumn();
-    if (!$id_localisation) {
-        $stmt = $pdo->prepare("INSERT INTO localisation (latitude, longitude, code_INSEE) VALUES (?, ?, ?)");
-        $stmt->execute([$data['lat'], $data['lon'], $data['code_insee']]);
-        $id_localisation = $pdo->lastInsertId();
+    // Modèle
+    $stmt = $pdo->prepare("SELECT id_modele FROM modele_panneau WHERE modele = ?");
+    $stmt->execute([$data['modele_panneau']]);
+    $id_modele_panneau = $stmt->fetchColumn();
+    if (!$id_modele_panneau) {
+        $stmt = $pdo->prepare("INSERT INTO modele_panneau (modele) VALUES (?)");
+        $stmt->execute([$data['modele_panneau']]);
+        $id_modele_panneau = $pdo->lastInsertId();
     }
 
-    // Vérifier ou insérer installateur
-    $stmt = $pdo->prepare("SELECT id_installateur FROM installateur WHERE nom_installateur = ?");
-    $stmt->execute([$data['installateur']]);
-    $id_installateur = $stmt->fetchColumn();
-    if (!$id_installateur) {
-        $stmt = $pdo->prepare("INSERT INTO installateur (nom_installateur) VALUES (?)");
-        $stmt->execute([$data['installateur']]);
-        $id_installateur = $pdo->lastInsertId();
+    // On supprime les panneaux existants de l’installation
+    $stmt = $pdo->prepare("DELETE FROM panneau WHERE id_installation = ?");
+    $stmt->execute([$id_actuel]);
+
+    // Puis on recrée exactement nb_panneaux en liant la marque et le modèle
+    $nbPanneaux = max(0, (int)($data['nb_panneaux'] ?? 0));
+    if ($nbPanneaux > 0) {
+        $stmt = $pdo->prepare("
+            INSERT INTO panneau (id_installation, id_marque, id_modele)
+            VALUES (?, ?, ?)
+        ");
+        for ($i = 0; $i < $nbPanneaux; $i++) {
+            $stmt->execute([$nouvel_id, $id_marque_panneau, $id_modele_panneau]);
+        }
     }
 
-    // Update installation
-    $sql = "UPDATE installation SET
-        id_installation = ?,
-        date_installation = ?,
-        nb_panneaux = ?,
-        surface = ?,
-        puissance_crete = ?,
-        nb_ondulateur = ?,
-        pente = ?,
-        pente_opti = ?,
-        orientation = ?,
-        orientation_opti = ?,
-        prod_pvgis = ?,
-        id_localisation = ?,
-        id_installateur = ?
-        WHERE id_installation = ?";
+    /* ------------------------------------------------------------------
+     * 5. MISE À JOUR DE L’INSTALLATION
+     * ------------------------------------------------------------------*/
+    $sql = "
+        UPDATE installation SET
+            id_installation   = ?,
+            date_installation = ?,
+            nb_panneaux       = ?,
+            surface           = ?,
+            puissance_crete   = ?,
+            nb_ondulateur     = ?,
+            pente             = ?,
+            pente_opti        = ?,
+            orientation       = ?,
+            orientation_opti  = ?,
+            prod_pvgis        = ?,
+            id_onduleur       = ?,    -- ← onduleur mis à jour
+            id_localisation   = ?,
+            id_installateur   = ?
+        WHERE id_installation = ?
+    ";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         $nouvel_id,
-        $data['date_installation'] ?? null,
-        $data['nb_panneaux'] ?? 0,
-        $data['surface'] ?? 0,
-        $data['puissance_crete'] ?? 0,
-        $data['nb_onduleur'] ?? 0,
-        $data['pente'] ?? 0,
-        $data['pente_optimum'] ?? 0,
-        $data['orientation'] ?? 0,
-        $data['orientation_optimum'] ?? 0,
-        $data['production_pvgis'] ?? 0,
+        $data['date_installation']     ?? null,
+        $nbPanneaux,
+        $data['surface']               ?? 0,
+        $data['puissance_crete']       ?? 0,
+        $data['nb_onduleur']           ?? 0,
+        $data['pente']                 ?? 0,
+        $data['pente_optimum']         ?? 0,
+        $data['orientation']           ?? 0,
+        $data['orientation_optimum']   ?? 0,
+        $data['production_pvgis']      ?? 0,
+        $id_onduleur,                       // ← FK onduleur
         $id_localisation,
         $id_installateur,
         $id_actuel

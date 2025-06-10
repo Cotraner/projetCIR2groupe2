@@ -10,7 +10,7 @@ let onduleursDisponibles = [];
 let panneauxDisponibles = [];
 let depsAuto = [];
 
-fetch("../../back/api.php?resource=installations")
+fetch("../../back/api.php?resource=installations") // Récupération des installations depuis l'API
   .then((res) => res.json())
   .then((data) => {
     allInstallations = Array.isArray(data) ? data : [data];
@@ -19,7 +19,7 @@ fetch("../../back/api.php?resource=installations")
     const onduleurs = new Set();
     const panneaux = new Set();
 
-    allInstallations.forEach((inst) => {
+    allInstallations.forEach((inst) => {// Extraction des départements, onduleurs et panneaux disponibles
       if (inst.dep_code?.trim()) departements.add(inst.dep_code.trim());
       if (inst.marque_onduleur?.trim()) onduleurs.add(inst.marque_onduleur.trim());
       if (inst.marque_panneau?.trim()) panneaux.add(inst.marque_panneau.trim());
@@ -29,28 +29,28 @@ fetch("../../back/api.php?resource=installations")
     onduleursDisponibles = [...onduleurs].sort();
     panneauxDisponibles = [...panneaux].sort();
 
-    onduleursDisponibles.forEach((marque) => {
+    onduleursDisponibles.forEach((marque) => {// Ajout des marques d'onduleurs disponibles au sélecteur
       const opt = document.createElement("option");
       opt.value = marque;
       opt.textContent = marque;
       onduleurSelect.appendChild(opt);
     });
 
-    panneauxDisponibles.forEach((marque) => {
+    panneauxDisponibles.forEach((marque) => { // Ajout des marques de panneaux disponibles au sélecteur
       const opt = document.createElement("option");
       opt.value = marque;
       opt.textContent = marque;
       panneauxSelect.appendChild(opt);
     });
 
-    departementsDisponibles.forEach((dep) => {
+    departementsDisponibles.forEach((dep) => { // Ajout des départements disponibles au sélecteur
       const opt = document.createElement("option");
       opt.value = dep;
       opt.textContent = dep;
       departementSelect.appendChild(opt);
     });
 
-    $('#onduleur').multiselect({
+    $('#onduleur').multiselect({ // Initialisation du sélecteur multiselect pour les onduleurs
       includeSelectAllOption: true,
       maxHeight: 300,
       buttonWidth: '250px',
@@ -66,7 +66,7 @@ fetch("../../back/api.php?resource=installations")
       }
     });
 
-    $('#panneaux').multiselect({
+    $('#panneaux').multiselect({ // Initialisation du sélecteur multiselect pour les panneaux
       includeSelectAllOption: true,
       maxHeight: 300,
       buttonWidth: '250px',
@@ -82,7 +82,7 @@ fetch("../../back/api.php?resource=installations")
       }
     });
 
-    $('#departement').multiselect({
+    $('#departement').multiselect({ // Initialisation du sélecteur multiselect pour les départements
       maxHeight: 300,
       buttonWidth: '250px',
       nonSelectedText: 'Sélection auto uniquement',
@@ -102,7 +102,7 @@ fetch("../../back/api.php?resource=installations")
       }
     });
 
-    // 🔁 Si on revient de details.php, restaurer les filtres précédents
+    // si on revient de details.php, restaurer les filtres précédents
     const params = new URLSearchParams(window.location.search);
     if (params.get("retour") === "details" && sessionStorage.getItem("derniereRecherche")) {
       const previousState = JSON.parse(sessionStorage.getItem("derniereRecherche"));
@@ -112,7 +112,7 @@ fetch("../../back/api.php?resource=installations")
       depsAuto = previousState.deps;
       $('#departement').val(depsAuto).multiselect('refresh');
 
-      // ⏎ Soumet la recherche avec les anciennes valeurs
+      // Soumet la recherche avec les anciennes valeurs
       form.dispatchEvent(new Event("submit"));
     }
   })
@@ -120,13 +120,13 @@ fetch("../../back/api.php?resource=installations")
     console.error("Erreur API :", err);
   });
 
-function getDepartementsAleatoires() {
+function getDepartementsAleatoires() { // Fonction pour obtenir un nombre aléatoire de départements
   const shuffled = [...departementsDisponibles].sort(() => Math.random() - 0.5);
   const count = Math.floor(Math.random() * 20) + 1;
   return shuffled.slice(0, count);
 }
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", (e) => { // Événement de soumission du formulaire pour filtrer les installations
   e.preventDefault();
 
   const imageDiv = document.getElementById("image-recherche");
@@ -135,7 +135,7 @@ form.addEventListener("submit", (e) => {
   const params = new URLSearchParams(window.location.search);
   const fromDetails = params.get("retour") === "details";
 
-  // 🚫 Ne regénère pas depsAuto si retour depuis details.php
+  // Ne regénère pas depsAuto si retour depuis details.php
   if (!fromDetails) {
     depsAuto = getDepartementsAleatoires();
     $('#departement').multiselect('deselectAll', false);
@@ -144,7 +144,7 @@ form.addEventListener("submit", (e) => {
 
   const onduleurChoisis = $('#onduleur').val() || [];
   const panneauxChoisis = $('#panneaux').val() || [];
-
+  // Si aucun onduleur ou panneau n'est sélectionné, on prend tous les choix
   const filtresComplets = allInstallations.filter(inst =>
     (onduleurChoisis.length === 0 || onduleurChoisis.includes(inst.marque_onduleur)) &&
     (panneauxChoisis.length === 0 || panneauxChoisis.includes(inst.marque_panneau)) &&
@@ -153,7 +153,7 @@ form.addEventListener("submit", (e) => {
 
   const filtres = filtresComplets.slice(0, 100);
 
-  if (filtres.length === 0) {
+  if (filtres.length === 0) {// Si aucun résultat, afficher un message
     resultatsDiv.innerHTML = "<p style='color:red'>Aucun résultat trouvé.</p>";
     return;
   }
@@ -165,11 +165,11 @@ form.addEventListener("submit", (e) => {
     deps: depsAuto
   }));
 
-  const rows = filtres.map(inst => {
+  const rows = filtres.map(inst => {// Génération des lignes du tableau
     const date = new Date(inst.date_installation);
     const moisAnnee = isNaN(date.getTime()) ? "Non définie" :
       date.toLocaleDateString("fr-FR", { month: 'long', year: 'numeric' });
-
+    // Utilisation de la puissance crête si disponible, sinon de la puissance crête
     return `
       <tr>
         <td>${moisAnnee}</td>
@@ -184,11 +184,11 @@ form.addEventListener("submit", (e) => {
     `;
   }).join("");
 
-  let message = `<h4 style="color:#106797">${filtresComplets.length} installation(s) trouvée(s)</h4>`;
+  let message = `<h4 style="color:#106797">${filtresComplets.length} installation(s) trouvée(s)</h4>`;// Message d'en-tête avec le nombre d'installations trouvées
   if (filtresComplets.length > 100) {
     message += `<p style="color:#F3A829;font-weight:bold">Seules les 100 premières sont affichées pour des raisons de performance.</p>`;
   }
-
+  // Affichage du message et du tableau des résultats
   resultatsDiv.innerHTML = `
     ${message}
     <table class="table table-bordered table-striped mt-3">

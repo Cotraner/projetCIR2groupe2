@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {// Initialisation du jeu Konami
     const container = document.getElementById("jeu-konami");
 
     const canvas = document.createElement("canvas");
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ALIEN_HEIGHT = 80;
     const BONUS_SIZE = 70;
 
-    const player = {
+    const player = {// Position et vitesse du joueur
         x: canvas.width / 2 - PLAYER_WIDTH / 2,
         y: canvas.height - PLAYER_HEIGHT - 10,
         speed: 5
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initEnemies();
 
-    document.addEventListener("keydown", e => {
+    document.addEventListener("keydown", e => {// Gestion des touches
         if (["ArrowLeft", "ArrowRight", " "].includes(e.key)) {
             e.preventDefault();
         }
@@ -83,18 +83,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    document.addEventListener("keyup", e => {
+    document.addEventListener("keyup", e => {// Gestion des touches
         keys[e.key] = false;
     });
 
     function updateStars() {
-        stars.forEach(s => {
+        stars.forEach(s => {// Mise à jour de la position des étoiles
             s.y += s.speed;
             if (s.y > canvas.height) s.y = 0;
         });
     }
 
-    function checkCollision(a, b) {
+    function checkCollision(a, b) {// Vérification de collision entre deux objets
         const bw = b.width || ALIEN_WIDTH;
         const bh = b.height || ALIEN_HEIGHT;
         return (
@@ -105,11 +105,11 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    function spawnBonus(x, y) {
+    function spawnBonus(x, y) {// Génération d'un bonus
         bonus = { x, y, speed: 1.5 };
     }
 
-    function updateEnemies() {
+    function updateEnemies() {// Mise à jour de la position des ennemis
         let shouldReverse = false;
 
         enemies.forEach(e => {
@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (shouldReverse) {
-            enemies.forEach(e => {
+            enemies.forEach(e => {// Inversion de la direction des ennemis
                 e.y += 20;
                 if (e.alive && e.y + ALIEN_HEIGHT >= player.y) {
                     lives--;
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function update() {
+    function update() {// Mise à jour de l'état du jeu
         if (isGameOver) return;
 
         if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        if (bonus) {
+        if (bonus) {// Mise à jour de la position du bonus
             bonus.y += bonus.speed;
             if (checkCollision(bonus, player)) {
                 lives++;
@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        if (enemies.every(e => !e.alive)) {
+        if (enemies.every(e => !e.alive)) {// Vérification si tous les ennemis sont détruits
             level++;
             enemySpeed = 0.5 + level * 0.2;
             initEnemies();
@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateStars();
     }
 
-    function draw() {
+    function draw() {// Dessin des éléments sur le canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         ctx.fillStyle = "black";
@@ -213,14 +213,14 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillText("Vies : " + lives, canvas.width - 100, 20);
         ctx.fillText("Niveau : " + level, canvas.width / 2 - 40, 20);
 
-        if (isGameOver) {
+        if (isGameOver) {// Affichage du message de fin de jeu
             ctx.fillStyle = "black";
             ctx.font = "40px Itim, cursive";
             ctx.fillText("GAME OVER", canvas.width / 2 - 120, canvas.height / 2);
         }
     }
 
-    function loop() {
+    function loop() {// Boucle principale du jeu
         update();
         draw();
         requestAnimationFrame(loop);

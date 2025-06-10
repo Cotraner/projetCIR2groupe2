@@ -4,11 +4,11 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require_once(__DIR__ . '/../../back/db.php');
-
+// Connexion à la base de données
 $id = $_GET['id'] ?? null;
 $data = null;
 $error = null;
-
+// Vérification de l'ID d'installation
 if ($id) {
     try {
         $stmt = $pdo->prepare("
@@ -47,7 +47,7 @@ if ($id) {
     $error = "Aucun ID d’installation fourni.";
 }
 
-// 🔁 Lien retour dynamique
+// Lien retour dynamique
 $retourURL = $_GET['retour'] ?? 'recherches.php';
 $retourDecoded = urldecode($retourURL);
 $retourLabel = "← Retour";

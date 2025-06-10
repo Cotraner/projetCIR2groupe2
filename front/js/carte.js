@@ -1,6 +1,6 @@
 var map = L.map("map").setView([46.53431920546267, 2.61964400404613], 6);
 
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { // ouverture des données OSM
   maxZoom: 19,
   attribution: '&copy; OpenStreetMap'
 }).addTo(map);
@@ -16,7 +16,7 @@ let anneesDisponibles = [];
 let depsAuto = [];
 let anneesAuto = [];
 
-function getQueryParams() {
+function getQueryParams() { // Fonction pour récupérer les paramètres de la requête URL
   const params = {};
   const queryString = window.location.search.substring(1);
   const pairs = queryString.split("&");
@@ -39,7 +39,7 @@ function getQueryParams() {
   return params;
 }
 
-function restoreMapStateFromURL() {
+function restoreMapStateFromURL() { // Fonction pour restaurer l'état de la carte à partir des paramètres de la requête URL
   const params = getQueryParams();
   if (params.lat && params.lng && params.zoom) {
     const lat = parseFloat(params.lat);
@@ -51,7 +51,7 @@ function restoreMapStateFromURL() {
   }
 }
 
-function afficherInstallations(installations) {
+function afficherInstallations(installations) { // Fonction pour afficher les installations sur la carte
   allMarkers.forEach((m) => map.removeLayer(m));
   allMarkers = [];
 
@@ -84,18 +84,18 @@ function afficherInstallations(installations) {
     allMarkers.push(marker);
   });
 
-  if (installations.length > 200) {
+  if (installations.length > 200) { // Limite à 200 installations pour éviter les problèmes de performance
     alert("⚠️ Trop d’installations : seules les 200 premières sont affichées.");
   }
 }
 
-function getDepartementsAleatoires() {
+function getDepartementsAleatoires() { // Fonction pour obtenir un nombre aléatoire de départements disponibles
   const shuffled = [...departementsDisponibles].sort(() => Math.random() - 0.5);
   const count = Math.floor(Math.random() * 20) + 1;
   return shuffled.slice(0, count);
 }
 
-function filtrerEtAfficher() {
+function filtrerEtAfficher() { // Fonction pour filtrer les installations et les afficher sur la carte
   const anneesChoisies = $('#annee').val() || [];
   const filtres = allInstallations.filter((inst) => {
     const annee = inst.date_installation.split("-")[0];
@@ -108,7 +108,7 @@ function filtrerEtAfficher() {
   afficherInstallations(filtres);
 }
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", (e) => { // Événement de soumission du formulaire pour filtrer les installations
   e.preventDefault();
 
   depsAuto = getDepartementsAleatoires();
@@ -121,7 +121,7 @@ form.addEventListener("submit", (e) => {
   filtrerEtAfficher();
 });
 
-fetch("../../back/api.php?resource=installations")
+fetch("../../back/api.php?resource=installations") // Récupération des installations depuis l'API
   .then((res) => res.json())
   .then((data) => {
     allInstallations = Array.isArray(data) ? data : [data];
@@ -129,7 +129,7 @@ fetch("../../back/api.php?resource=installations")
     const annees = new Set();
     const departements = new Set();
 
-    allInstallations.forEach((inst) => {
+    allInstallations.forEach((inst) => { // Extraction des années et départements disponibles
       const annee = inst.date_installation.split("-")[0];
       annees.add(annee);
       const dep = inst.dep_code?.trim();
@@ -139,21 +139,21 @@ fetch("../../back/api.php?resource=installations")
     anneesDisponibles = [...annees].sort();
     departementsDisponibles = [...departements].sort();
 
-    anneesDisponibles.forEach((a) => {
+    anneesDisponibles.forEach((a) => { // Ajout des années disponibles au sélecteur
       const opt = document.createElement("option");
       opt.value = a;
       opt.textContent = a;
       anneeSelect.appendChild(opt);
     });
 
-    departementsDisponibles.forEach((d) => {
+    departementsDisponibles.forEach((d) => { // Ajout des départements disponibles au sélecteur
       const opt = document.createElement("option");
       opt.value = d;
       opt.textContent = d;
       departementSelect.appendChild(opt);
     });
 
-    $('#annee').multiselect({
+    $('#annee').multiselect({ // Configuration du sélecteur d'années
       includeSelectAllOption: true,
       maxHeight: 300,
       buttonWidth: '250px',
@@ -169,7 +169,7 @@ fetch("../../back/api.php?resource=installations")
       }
     });
 
-    $('#departement').multiselect({
+    $('#departement').multiselect({ // Configuration du sélecteur de départements
       maxHeight: 300,
       buttonWidth: '250px',
       nonSelectedText: 'Sélection auto uniquement',
@@ -191,7 +191,7 @@ fetch("../../back/api.php?resource=installations")
 
     restoreMapStateFromURL();
 
-    const params = getQueryParams();
+    const params = getQueryParams(); // Récupération des paramètres de la requête URL
     if (params.retour === "1") {
       // Appliquer les valeurs si elles existent
       anneesAuto = params.annee || [];
@@ -203,6 +203,6 @@ fetch("../../back/api.php?resource=installations")
       filtrerEtAfficher();
     }
   })
-  .catch((err) => {
+  .catch((err) => { // Gestion des erreurs lors de la récupération des installations
     console.error("Erreur API :", err);
   });

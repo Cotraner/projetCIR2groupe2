@@ -10,12 +10,12 @@
   <link rel="stylesheet" href="../css/navbar.css">
   <link rel="stylesheet" href="../css/accueil.css">
   <link href='https://fonts.googleapis.com/css?family=Itim' rel='stylesheet'>
-  <script src="../js/accueil.js"></script>
-  <script src="../js/konami.js"></script>
+  <script src="../js/accueil.js" defer></script>
+  <script src="../js/konami.js" defer></script>
 </head>
-<body>
-  <div class="d-flex flex-column min-vh-100">
-    <main class="flex-grow-1">
+<body> 
+  <div class="d-flex flex-column min-vh-100"> 
+    <main class="flex-grow-1"> 
       <nav class="navbar navbar-expand-lg">
         <!-- Logo à gauche -->
         <a class="navbar-brand">

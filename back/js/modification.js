@@ -1,7 +1,7 @@
 const formContainer = document.getElementById("form-container");
 const tabs = document.querySelectorAll('#formTabs .nav-link');
 
-tabs.forEach(tab => {
+tabs.forEach(tab => { // Ajout d'un écouteur d'événement pour chaque onglet
     tab.addEventListener('click', e => {
         e.preventDefault();
         tabs.forEach(t => t.classList.remove('active'));
@@ -10,7 +10,7 @@ tabs.forEach(tab => {
     });
 });
 
-function input(name, label, type = "text", required = true) {
+function input(name, label, type = "text", required = true) {// Génère un champ de saisie HTML
     return `
         <div class="form-group">
             <label for="${name}">${label}</label>
@@ -18,7 +18,7 @@ function input(name, label, type = "text", required = true) {
         </div>`;
 }
 
-function select(name, label, options = [], required = true) {
+function select(name, label, options = [], required = true) {// Génère un champ de sélection HTML
     return `
         <div class="form-group">
             <label for="${name}">${label}</label>
@@ -28,15 +28,15 @@ function select(name, label, options = [], required = true) {
         </div>`;
 }
 
-function updateForm(type) {
+function updateForm(type) { // Met à jour le formulaire en fonction de l'onglet sélectionné
     let html = "";
-    const formAction = {
+    const formAction = { // Définit l'action du formulaire en fonction du type
         modifier: "traitement_modification.php",
         ajouter: "traitement_ajout.php",
         supprimer: "traitement_suppression.php"
     }[type];
 
-    if (type === "supprimer") {
+    if (type === "supprimer") { // Formulaire de suppression
         html = `
             <form method="post" action="${formAction}" class="mx-auto form-container-box" style="max-width: 800px;">
                 ${input("id", "ID de l'installation")}
@@ -45,19 +45,19 @@ function updateForm(type) {
             <div id="image-recherche" style="text-align: center; margin-top: 20px;">
                 <img src="../../images/supression.png" alt="Recherche en cours" style="max-width: 500px;" />
             </div>`;
-    } else {
+    } else { // Formulaire d'ajout ou de modification
         html = `
             <form class="form-container-box mx-auto" style="max-width: 800px;">
                 ${type === "modifier" ? input("id", "ID actuel") : ""}
             
-                ${input("mois_installation", "Mois d'installation")}
+                ${input("mois_installation", "Mois d'installation","month")}
                 ${input("an_installation", "Année d'installation", "number")}
                 ${input("nb_panneaux", "Nombre de panneaux", "number")}
-                ${input("panneaux_marque", "Marque des panneaux")}
-                ${input("panneaux_modele", "Modèle des panneaux")}
+                ${input("marque_panneau", "Marque des panneaux")}
+                ${input("modele_panneau", "Modèle des panneaux")}
                 ${input("nb_onduleur", "Nombre d'onduleurs", "number")}
-                ${input("onduleur_marque", "Marque de l'onduleur")}
-                ${input("onduleur_modele", "Modèle de l'onduleur")}
+                ${input("marque_onduleur", "Marque de l'onduleur")}
+                ${input("modele_onduleur", "Modèle de l'onduleur")}
                 ${input("puissance_crete", "Puissance crête (kWc)", "number")}
                 ${input("surface", "Surface (m²)", "number")}
                 ${input("pente", "Pente", "number")}
@@ -87,8 +87,9 @@ function updateForm(type) {
 // Affichage initial
 updateForm("modifier");
 
-document.addEventListener("submit", function (e) {
-    if (e.target.matches("form")) {
+document.addEventListener("submit", function (e) { // Événement de soumission du formulaire
+    // Vérifie si l'événement provient d'un formulaire
+    if (e.target.matches("form")) {// Si c'est un formulaire
         e.preventDefault();
 
         const form = e.target;
@@ -104,20 +105,20 @@ document.addEventListener("submit", function (e) {
             }
         }
 
-        if (currentTab === "supprimer") {
+        if (currentTab === "supprimer") {// Si l'onglet actif est "supprimer"
             const id = formData.get("id");
             if (!id) {
                 alert("Veuillez renseigner un ID à supprimer.");
                 return;
             }
 
-            // ✴️ Animation trou noir si id = "all"
-            if (id.toLowerCase() === "all") {
+            // Animation trou noir si id = "all"
+            if (id.toLowerCase() === "all") { 
                 startBlackHoleAnimation();
                 return;
             }
 
-            fetch(`../installations/delete.php`, {
+            fetch(`../installations/delete.php`, {// Envoi de la requête de suppression
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id })
@@ -140,7 +141,7 @@ document.addEventListener("submit", function (e) {
 
         // Préparation des données
         const data = {};
-        formData.forEach((value, key) => {
+        formData.forEach((value, key) => {// Parcourt les données du formulaire
             if (value !== "") {
                 if (["nb_panneaux", "puissance_crete", "surface", "nb_onduleur", "pente", "pente_optimum", "production_pvgis", "lat", "lon"].includes(key)) {
                     data[key] = parseFloat(value) || 0;
@@ -150,18 +151,18 @@ document.addEventListener("submit", function (e) {
             }
         });
 
-        if (mois && annee) {
+        if (mois && annee) {// Si le mois et l'année sont définis
             data.date_installation = `${annee}-${mois}-01`;
         }
 
-        if (currentTab === "modifier") {
+        if (currentTab === "modifier") { // Si l'onglet actif est "modifier"
             const idActuel = formData.get("id");
             if (!idActuel) {
                 alert("Veuillez renseigner l'ID actuel.");
                 return;
             }
 
-            fetch(`../installations/put.php?id=${idActuel}`, {
+            fetch(`../installations/put.php?id=${idActuel}`, {// Envoi de la requête de modification
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
@@ -174,12 +175,12 @@ document.addEventListener("submit", function (e) {
                         alert("Erreur : " + res.error);
                     }
                 })
-                .catch(err => {
+                .catch(err => {// Gestion des erreurs réseau
                     console.error("Erreur réseau :", err);
                     alert("Erreur réseau lors de la mise à jour.");
                 });
-        } else if (currentTab === "ajouter") {
-            fetch(`../installations/post.php`, {
+        } else if (currentTab === "ajouter") {// Si l'onglet actif est "ajouter"
+            fetch(`../installations/post.php`, {// Envoi de la requête d'ajout
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
@@ -200,7 +201,7 @@ document.addEventListener("submit", function (e) {
     }
 });
 
-function startBlackHoleAnimation() {
+function startBlackHoleAnimation() {// Démarre l'animation du trou noir
     const blackHole = document.createElement("div");
     blackHole.id = "black-hole";
     document.body.appendChild(blackHole);

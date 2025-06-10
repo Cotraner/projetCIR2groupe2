@@ -80,9 +80,9 @@ switch ($resource) {
             echo json_encode(['error' => 'Méthode non autorisée']);
         }
         break;
-
+        // Gestion des installations
     case 'installations':
-        if ($method === 'GET') {
+        if ($method === 'GET') {// Récupération des installations
             if ($id) {
                 $stmt = $pdo->prepare("
                     SELECT 
@@ -105,7 +105,7 @@ switch ($resource) {
                 ");
                 $stmt->execute([$id]);
                 echo json_encode($stmt->fetch());
-            } else {
+            } else {// Récupération de toutes les installations
                 $stmt = $pdo->query("
                     SELECT 
                         i.*, 
@@ -126,9 +126,9 @@ switch ($resource) {
                 ");
                 echo json_encode($stmt->fetchAll());
             }
-        } elseif ($method === 'POST') {
+        } elseif ($method === 'POST') { // Création d'une nouvelle installation
             require_once(__DIR__ . '/installations/post.php');
-        } elseif (in_array($method, ['PUT', 'PATCH'])) {
+        } elseif (in_array($method, ['PUT', 'PATCH'])) { // Modification d'une installation existante
             if ($id) {
                 $_GET['id'] = $id;
                 require_once(__DIR__ . '/installations/put.php');
@@ -136,7 +136,7 @@ switch ($resource) {
                 http_response_code(400);
                 echo json_encode(['error' => 'ID requis pour modification']);
             }
-        } elseif ($method === 'DELETE') {
+        } elseif ($method === 'DELETE') { // Suppression d'une installation
             if ($id) {
                 $_GET['id'] = $id;
                 require_once(__DIR__ . '/installations/delete.php');
@@ -150,7 +150,7 @@ switch ($resource) {
         }
         break;
     case 'installations_par_annee_region':
-    if ($method === 'GET') {
+    if ($method === 'GET') { // Récupération du nombre d'installations par année et région
         $annee = $_GET['annee'] ?? null;
         $region = $_GET['region'] ?? null;
 
@@ -164,6 +164,7 @@ switch ($resource) {
                 JOIN region r ON d.reg_code = r.reg_code
                 WHERE YEAR(i.date_installation) = :annee AND r.reg_nom = :region
             ");
+            // Exécution de la requête avec les paramètres
             $stmt->execute([
                 'annee' => $annee,
                 'region' => $region
@@ -174,7 +175,7 @@ switch ($resource) {
             http_response_code(400);
             echo json_encode(['error' => 'Paramètres année et région requis']);
         }
-    } else {
+    } else {// Méthode non autorisée
         http_response_code(405);
         echo json_encode(['error' => 'Méthode non autorisée']);
     }

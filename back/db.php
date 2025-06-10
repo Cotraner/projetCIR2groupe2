@@ -11,7 +11,8 @@ $options = [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC // ✅ plus de clés 0,1,2...
 ];
 
-try {
+try { // Crée une instance PDO pour se connecter à la base de données
+    // Vérification de l'extension PDO
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass, $options);
 } catch (PDOException $e) {
     http_response_code(500);

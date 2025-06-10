@@ -147,7 +147,7 @@ try {
     $pdo->commit();
 
     echo json_encode(['message' => 'Installation ajoutée avec succès', 'id' => $id_installation]);
-} catch (PDOException $e) {
+} catch (PDOException $e) { // En cas d'erreur lors de la requête
     $pdo->rollBack();
     http_response_code(500);
     echo json_encode(['error' => 'Erreur : ' . $e->getMessage()]);

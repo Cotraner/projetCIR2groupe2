@@ -1,13 +1,14 @@
 <?php
+// Récupération des installations depuis la base de données
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-header('Content-Type: application/json');
+header('Content-Type: application/json');// Définition du type de contenu pour la réponse JSON
 require_once(__DIR__ . '/../db.php');
 
 try {
-    if (isset($_GET['id'])) {
+    if (isset($_GET['id'])) {// Si un ID est fourni, on récupère une seule installation
         $stmt = $pdo->prepare("
             SELECT i.*, 
                    l.latitude, l.longitude, 
@@ -27,7 +28,7 @@ try {
         ");
         $stmt->execute([$_GET['id']]);
         $result = $stmt->fetch();
-    } else {
+    } else {// Si aucun ID n'est fourni, on récupère toutes les installations
         $stmt = $pdo->query("
             SELECT i.*, 
                    l.latitude, l.longitude, 
@@ -48,7 +49,7 @@ try {
     }
 
     echo json_encode($result);
-} catch (PDOException $e) {
+} catch (PDOException $e) {// En cas d'erreur lors de la requête
     http_response_code(500);
     echo json_encode(['error' => 'Erreur : ' . $e->getMessage()]);
 }

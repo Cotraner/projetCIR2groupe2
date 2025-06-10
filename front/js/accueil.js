@@ -60,7 +60,7 @@ function updateResult() {
   const region = document.getElementById("region-select").value;
   const resultInstallations = document.getElementById("installations-par-annee-region");
 
-  if (annee && region) {
+  if (annee && region) { // Vérification que les deux filtres sont sélectionnés
     fetch(`../../back/api.php?resource=installations_par_annee_region&annee=${annee}&region=${encodeURIComponent(region)}`)
       .then(res => {
         if (!res.ok) throw new Error("Erreur lors du chargement des données filtrées");
