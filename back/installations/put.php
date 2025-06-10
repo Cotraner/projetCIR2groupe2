@@ -82,7 +82,6 @@ try {
 
     // Update installation
     $sql = "UPDATE installation SET
-        id_installation = ?,
         date_installation = ?,
         nb_panneaux = ?,
         surface = ?,
@@ -99,7 +98,6 @@ try {
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        $nouvel_id,
         $data['date_installation'] ?? null,
         $data['nb_panneaux'] ?? 0,
         $data['surface'] ?? 0,

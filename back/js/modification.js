@@ -49,7 +49,6 @@ function updateForm(type) {
         html = `
             <form class="form-container-box mx-auto" style="max-width: 800px;">
                 ${type === "modifier" ? input("id", "ID actuel") : ""}
-            
                 ${input("mois_installation", "Mois d'installation")}
                 ${input("an_installation", "Année d'installation", "number")}
                 ${input("nb_panneaux", "Nombre de panneaux", "number")}

@@ -135,7 +135,7 @@ form.addEventListener("submit", (e) => {
   const params = new URLSearchParams(window.location.search);
   const fromDetails = params.get("retour") === "details";
 
-  // 🚫 Ne regénère pas depsAuto si retour depuis details.php
+  // Ne regénère pas departement si on vient de details.php
   if (!fromDetails) {
     depsAuto = getDepartementsAleatoires();
     $('#departement').multiselect('deselectAll', false);
