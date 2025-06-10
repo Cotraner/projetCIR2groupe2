@@ -49,8 +49,7 @@ function updateForm(type) { // Met à jour le formulaire en fonction de l'onglet
         html = `
             <form class="form-container-box mx-auto" style="max-width: 800px;">
                 ${type === "modifier" ? input("id", "ID actuel") : ""}
-            
-                ${input("mois_installation", "Mois d'installation","month")}
+                ${input("mois_installation", "Mois d'installation")}
                 ${input("an_installation", "Année d'installation", "number")}
                 ${input("nb_panneaux", "Nombre de panneaux", "number")}
                 ${input("marque_panneau", "Marque des panneaux")}

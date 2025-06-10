@@ -73,21 +73,21 @@ try {
 
     // Marque onduleur
     $stmt = $pdo->prepare("SELECT id_marque FROM marque_onduleur WHERE marque = ?");
-    $stmt->execute([$data['onduleur_marque']]);
+    $stmt->execute([$data['marque_onduleur']]);
     $id_marque_onduleur = $stmt->fetchColumn();
     if (!$id_marque_onduleur) {
         $stmt = $pdo->prepare("INSERT INTO marque_onduleur (marque) VALUES (?)");
-        $stmt->execute([$data['onduleur_marque']]);
+        $stmt->execute([$data['marque_onduleur']]);
         $id_marque_onduleur = $pdo->lastInsertId();
     }
 
     // Modèle onduleur
     $stmt = $pdo->prepare("SELECT id_modele FROM modele_onduleur WHERE modele_onduleur = ?");
-    $stmt->execute([$data['onduleur_modele']]);
+    $stmt->execute([$data['modele_onduleur']]);
     $id_modele_onduleur = $stmt->fetchColumn();
     if (!$id_modele_onduleur) {
         $stmt = $pdo->prepare("INSERT INTO modele_onduleur (modele_onduleur) VALUES (?)");
-        $stmt->execute([$data['onduleur_modele']]);
+        $stmt->execute([$data['modele_onduleur']]);
         $id_modele_onduleur = $pdo->lastInsertId();
     }
 
@@ -97,21 +97,21 @@ try {
 
     // Marque panneau
     $stmt = $pdo->prepare("SELECT id_marque FROM marque_panneau WHERE marque = ?");
-    $stmt->execute([$data['panneaux_marque']]);
+    $stmt->execute([$data['marque_panneau']]);
     $id_marque_panneau = $stmt->fetchColumn();
     if (!$id_marque_panneau) {
         $stmt = $pdo->prepare("INSERT INTO marque_panneau (marque) VALUES (?)");
-        $stmt->execute([$data['panneaux_marque']]);
+        $stmt->execute([$data['marque_panneau']]);
         $id_marque_panneau = $pdo->lastInsertId();
     }
 
     // Modèle panneau
     $stmt = $pdo->prepare("SELECT id_modele FROM modele_panneau WHERE modele = ?");
-    $stmt->execute([$data['panneaux_modele']]);
+    $stmt->execute([$data['modele_panneau']]);
     $id_modele_panneau = $stmt->fetchColumn();
     if (!$id_modele_panneau) {
         $stmt = $pdo->prepare("INSERT INTO modele_panneau (modele) VALUES (?)");
-        $stmt->execute([$data['panneaux_modele']]);
+        $stmt->execute([$data['modele_panneau']]);
         $id_modele_panneau = $pdo->lastInsertId();
     }
 

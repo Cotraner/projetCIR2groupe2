@@ -17,25 +17,12 @@ if (!$data) {
     exit;
 }
 
-$nouvel_id = $data['nouvel_id_installation'] ?? $id_actuel;
+// On garde l'ID actuel, pas de modification d'ID
 
 try {
     $pdo->beginTransaction();
-
-    /* ------------------------------------------------------------------
-     * 1. GÉO : pays → région → département → commune → localisation
-     * ------------------------------------------------------------------*/
-    /* … (ta partie géo inchangée, conservée) … */
-
-    /* ------------------------------------------------------------------
-     * 2. INSTALLATEUR
-     * ------------------------------------------------------------------*/
-    /* … (ta partie installateur inchangée) … */
-
-    /* ------------------------------------------------------------------
-     * 3. ONDULEUR  (marque + modèle → id_onduleur)
-     * ------------------------------------------------------------------*/
-    // Marque
+    
+    // Marque onduleur
     $stmt = $pdo->prepare("SELECT id_marque FROM marque_onduleur WHERE marque = ?");
     $stmt->execute([$data['marque_onduleur']]);
     $id_marque_onduleur = $stmt->fetchColumn();
@@ -45,7 +32,7 @@ try {
         $id_marque_onduleur = $pdo->lastInsertId();
     }
 
-    // Modèle
+    // Modèle onduleur
     $stmt = $pdo->prepare("SELECT id_modele FROM modele_onduleur WHERE modele_onduleur = ?");
     $stmt->execute([$data['modele_onduleur']]);
     $id_modele_onduleur = $stmt->fetchColumn();
@@ -72,10 +59,7 @@ try {
         $id_onduleur = $pdo->lastInsertId();
     }
 
-    /* ------------------------------------------------------------------
-     * 4. PANNEAUX  (marque + modèle)  — on recrée les N panneaux de l’installation
-     * ------------------------------------------------------------------*/
-    // Marque
+    // Marque panneau
     $stmt = $pdo->prepare("SELECT id_marque FROM marque_panneau WHERE marque = ?");
     $stmt->execute([$data['marque_panneau']]);
     $id_marque_panneau = $stmt->fetchColumn();
@@ -85,7 +69,7 @@ try {
         $id_marque_panneau = $pdo->lastInsertId();
     }
 
-    // Modèle
+    // Modèle panneau
     $stmt = $pdo->prepare("SELECT id_modele FROM modele_panneau WHERE modele = ?");
     $stmt->execute([$data['modele_panneau']]);
     $id_modele_panneau = $stmt->fetchColumn();
@@ -95,11 +79,58 @@ try {
         $id_modele_panneau = $pdo->lastInsertId();
     }
 
-    // On supprime les panneaux existants de l’installation
+    // GESTION DE LA LOCALISATION
+    // Pour le moment, on va utiliser une valeur par défaut ou chercher une localisation existante
+    // Vous devrez adapter selon vos vrais noms de colonnes
+    $id_localisation = 1; // Valeur par défaut - à adapter selon votre BDD
+    
+    // Si vous voulez gérer la localisation, décommentez et adaptez :
+    /*
+    $stmt = $pdo->prepare("
+        SELECT id_localisation 
+        FROM localisation 
+        WHERE latitude = ? AND longitude = ?
+    ");
+    $stmt->execute([$data['lat'], $data['lon']]);
+    $id_localisation = $stmt->fetchColumn();
+    
+    if (!$id_localisation) {
+        $stmt = $pdo->prepare("
+            INSERT INTO localisation (latitude, longitude, pays, code_postal, ville) 
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([
+            $data['lat'],
+            $data['lon'], 
+            $data['country'],
+            $data['postal_code'],
+            $data['locality']
+        ]);
+        $id_localisation = $pdo->lastInsertId();
+    }
+    */
+
+    // GESTION DE L'INSTALLATEUR
+    $id_installateur = 1; // Valeur par défaut - à adapter selon votre BDD
+    
+    // Si vous voulez gérer l'installateur, décommentez et adaptez :
+    /*
+    $stmt = $pdo->prepare("SELECT id_installateur FROM installateur WHERE nom = ?");
+    $stmt->execute([$data['installateur']]);
+    $id_installateur = $stmt->fetchColumn();
+    
+    if (!$id_installateur) {
+        $stmt = $pdo->prepare("INSERT INTO installateur (nom) VALUES (?)");
+        $stmt->execute([$data['installateur']]);
+        $id_installateur = $pdo->lastInsertId();
+    }
+    */
+
+    // Supprimer les panneaux existants de l'installation
     $stmt = $pdo->prepare("DELETE FROM panneau WHERE id_installation = ?");
     $stmt->execute([$id_actuel]);
 
-    // Puis on recrée exactement nb_panneaux en liant la marque et le modèle
+    // Recréer les panneaux
     $nbPanneaux = max(0, (int)($data['nb_panneaux'] ?? 0));
     if ($nbPanneaux > 0) {
         $stmt = $pdo->prepare("
@@ -107,31 +138,20 @@ try {
             VALUES (?, ?, ?)
         ");
         for ($i = 0; $i < $nbPanneaux; $i++) {
-            $stmt->execute([$nouvel_id, $id_marque_panneau, $id_modele_panneau]);
+            $stmt->execute([$id_actuel, $id_marque_panneau, $id_modele_panneau]);
         }
     }
 
-    // Update installation
-    $sql = "UPDATE installation SET
-        date_installation = ?,
-        nb_panneaux = ?,
-        surface = ?,
-        puissance_crete = ?,
-        nb_ondulateur = ?,
-        pente = ?,
-        pente_opti = ?,
-        orientation = ?,
-        orientation_opti = ?,
-        prod_pvgis = ?,
-        id_localisation = ?,
-        id_installateur = ?
-        WHERE id_installation = ?";
-    /* ------------------------------------------------------------------
-     * 5. MISE À JOUR DE L’INSTALLATION
-     * ------------------------------------------------------------------*/
+    // Créer la date d'installation
+    $date_installation = null;
+    if (!empty($data['mois_installation']) && !empty($data['an_installation'])) {
+        $mois = str_pad($data['mois_installation'], 2, '0', STR_PAD_LEFT);
+        $date_installation = $data['an_installation'] . '-' . $mois . '-01';
+    }
+
+    // Update installation (sans modifier l'ID)
     $sql = "
         UPDATE installation SET
-            id_installation   = ?,
             date_installation = ?,
             nb_panneaux       = ?,
             surface           = ?,
@@ -150,37 +170,28 @@ try {
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        $data['date_installation'] ?? null,
-        $data['nb_panneaux'] ?? 0,
-        $data['surface'] ?? 0,
-        $data['puissance_crete'] ?? 0,
-        $data['nb_onduleur'] ?? 0,
-        $data['pente'] ?? 0,
-        $data['pente_optimum'] ?? 0,
-        $data['orientation'] ?? 0,
-        $data['orientation_optimum'] ?? 0,
-        $data['production_pvgis'] ?? 0,
-        $nouvel_id,
-        $data['date_installation']     ?? null,
-        $nbPanneaux,
-        $data['surface']               ?? 0,
-        $data['puissance_crete']       ?? 0,
-        $data['nb_onduleur']           ?? 0,
-        $data['pente']                 ?? 0,
-        $data['pente_optimum']         ?? 0,
-        $data['orientation']           ?? 0,
-        $data['orientation_optimum']   ?? 0,
-        $data['production_pvgis']      ?? 0,
-        $id_onduleur,                    
-        $id_localisation,
-        $id_installateur,
-        $id_actuel
+        $date_installation,                      // date_installation = ?
+        $data['nb_panneaux'] ?? 0,              // nb_panneaux = ?
+        $data['surface'] ?? 0,                  // surface = ?
+        $data['puissance_crete'] ?? 0,          // puissance_crete = ?
+        $data['nb_onduleur'] ?? 0,              // nb_ondulateur = ?
+        $data['pente'] ?? 0,                    // pente = ?
+        $data['pente_optimum'] ?? 0,            // pente_opti = ?
+        $data['orientation'] ?? 0,              // orientation = ?
+        $data['orientation_optimum'] ?? 0,      // orientation_opti = ?
+        $data['production_pvgis'] ?? 0,         // prod_pvgis = ?
+        $id_onduleur,                           // id_onduleur = ?
+        $id_localisation,                       // id_localisation = ?
+        $id_installateur,                       // id_installateur = ?
+        $id_actuel                              // WHERE id_installation = ?
     ]);
 
     $pdo->commit();
     echo json_encode(['message' => "Installation mise à jour"]);
+    
 } catch (PDOException $e) {
     $pdo->rollBack();
     http_response_code(500);
     echo json_encode(['error' => 'Erreur lors de la mise à jour : ' . $e->getMessage()]);
 }
+?>
